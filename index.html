@@ -48,6 +48,8 @@ details.widget>summary{
   list-style:none;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800
 }
 details.widget>summary::-webkit-details-marker{display:none}
+.widget-hint{font-size:11.5px;color:var(--muted);font-weight:500}
+
 .widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
 
 .plan{display:grid;grid-template-columns:auto 70px 70px 70px auto;align-items:center;gap:8px;
@@ -151,7 +153,7 @@ function buildUI(){
   const grid=$('#widgets');grid.innerHTML='';
   GROUPS.forEach(g=>{
     const d=document.createElement('details');d.className='widget';d.open=true;
-    d.innerHTML=`<summary><span>${g.cat}</span><span class="badge">Välj ett alternativ</span></summary>
+    d.innerHTML=`<summary><span>${g.cat}</span><span class="widget-hint">Klicka för att fälla in / öppna</span></summary>
       <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>`;
     grid.appendChild(d);
   });
