@@ -17,11 +17,9 @@ html[data-theme=dark]{
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-header{
-  position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.05) blur(6px);
-  background:color-mix(in oklab, var(--bg) 90%, transparent);
-  border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between
-}
+header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.05) blur(6px);
+  background:color-mix(in oklab, var(--bg) 90%, transparent);border-bottom:1px solid var(--line);
+  padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
 h1{margin:0;font-size:18px;font-weight:800}
 .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .btn{border:1px solid var(--line);background:var(--card);color:inherit;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow)}
@@ -43,13 +41,13 @@ main{max-width:1300px;margin:18px auto;padding:0 16px;display:flex;flex-directio
 .summary-grid .val{font-size:20px;font-weight:800;margin-top:2px}
 
 .layout{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
-details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:all .2s ease}
 details.widget>summary{
   list-style:none;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800
 }
 details.widget>summary::-webkit-details-marker{display:none}
-.widget-hint{font-size:11.5px;color:var(--muted);font-weight:500}
-
+summary .icon{transition:transform .2s ease}
+details[open] summary .icon{transform:rotate(180deg)}
 .widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
 
 .plan{display:grid;grid-template-columns:auto 70px 70px 70px auto;align-items:center;gap:8px;
@@ -58,28 +56,20 @@ details.widget>summary::-webkit-details-marker{display:none}
 .plan.mobile{grid-template-columns:auto 90px auto;}
 .plan:hover{background:color-mix(in oklab, var(--card) 80%, var(--match))}
 .plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 28%, transparent)}
-.plan .left{display:flex;align-items:center;gap:8px}
 .input-wrap{display:flex;flex-direction:column;gap:2px}
 .input-wrap small{opacity:.7;font-size:10px}
 .input-wrap input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);
   color:var(--text);border-radius:8px;padding:6px;text-align:right;font-weight:600}
-.input-wrap input.active{background:var(--gold);color:var(--gold-ink)}
 
 .nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
 .nf-icon{font-size:12px;font-weight:800;color:var(--accent);border:1px solid var(--line);border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
-.nf-icon:hover::after{content:"Netflix +100 kr/mån";position:absolute;transform:translateY(24px);
-background:var(--card);color:var(--text);font-size:11px;border:1px solid var(--line);
-padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
 <header>
   <h1>Kompassen</h1>
   <div class="right">
-    <div class="searchbar" title="Sök paket, kanaler eller sport: Premier League, SHL, Netflix, TV4, Viaplay …">
-      🔎 <input id="search" placeholder="Sök paket, kanal eller sport …">
-      <button id="clearSearch" class="btn ghost">Rensa</button>
-    </div>
+    <div class="searchbar"><span>🔎</span><input id="search" placeholder="Sök paket …"><button id="clearSearch" class="btn ghost">Rensa</button></div>
     <button id="themeBtn" class="btn">Mörkt läge</button>
     <button id="resetBtn" class="btn ghost">Återställ</button>
   </div>
@@ -94,8 +84,8 @@ padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
   <section id="calcSummary" class="card summary-top">
     <h2>Samlad kalkyl</h2>
     <div class="summary-grid">
-      <div class="box"><div>Första 6 mån</div><div id="s1" class="val">0 SEK</div></div>
-      <div class="box"><div>Andra 6 mån</div><div id="s2" class="val">0 SEK</div></div>
+      <div class="box"><div>Första 6 mån (pris/mån)</div><div id="s1" class="val">0 SEK</div></div>
+      <div class="box"><div>Andra 6 mån (pris/mån)</div><div id="s2" class="val">0 SEK</div></div>
       <div class="box"><div>Helår totalt</div><div id="year" class="val">0 SEK</div></div>
       <div class="box"><div>Snitt / mån</div><div id="avg" class="val">0 SEK</div></div>
     </div>
@@ -107,20 +97,9 @@ padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
 <script>
 const GROUPS=[
   {cat:"Bredband",plans:[{id:"bb1",label:"Bredband 1"},{id:"bb2",label:"Bredband 2"},{id:"bb3",label:"Bredband 3"}]},
-  {cat:"TV-paket",plans:[{id:"mini",label:"Mini"},{id:"mellan",label:"Mellan"},{id:"mycket",label:"Mycket"}]},
-  {cat:"Premiumpaket",plans:[
-    {id:"mer",label:"Mer"},
-    {id:"maxad",label:"Maxad"},
-    {id:"mest",label:"Mest"}]},
-  {cat:"Sportpaket",plans:[
-    {id:"sportSmall",label:"Lilla S",sport:true},
-    {id:"sportLarge",label:"Stora S",sport:true},
-    {id:"sportLargest",label:"Största S",sport:true}]},
+  {cat:"Sportpaket",plans:[{id:"sportSmall",label:"Lilla S",sport:true},{id:"sportLarge",label:"Stora S",sport:true},{id:"sportLargest",label:"Största S",sport:true}]},
   {cat:"Mobilabonnemang",plans:[{id:"mob1",label:"Mobil 1"},{id:"mob2",label:"Mobil 2"},{id:"mob3",label:"Mobil 3"}]},
-  {cat:"Övrigt",plans:[
-    {id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},
-    {id:"forsakring",label:"Försäkring"},
-    {id:"egen",label:"Eget val (fyll i själv)"}]}
+  {cat:"Övrigt",plans:[{id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},{id:"forsakring",label:"Försäkring"},{id:"egen",label:"Eget val (fyll i själv)"}]}
 ];
 const NETFLIX_DELTA=100;
 let state={selections:{},prices:{},sportNF:{}};
@@ -131,20 +110,20 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 function planRowHTML(cat,plan){
   const pid=plan.id;
   const checked=state.selections[cat]===pid?'checked':'';
-  const price=state.prices[pid]?.m24??state.prices[pid]?.m12??'';
-  const nf=plan.sport?`<label class="nf-toggle" title="Netflix +100 kr/mån"><input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}><div class="nf-icon">N</div></label>`:`<span></span>`;
+  const price=state.prices[pid]?.m24??'';
+  const nf=plan.sport?`<label class="nf-toggle"><input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}><div class="nf-icon">N</div></label>`:`<span></span>`;
   if(plan.type==="mobile"){
     return `<div class="plan mobile" data-cat="${cat}" data-id="${pid}">
-      <div class="left"><label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label></div>
+      <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
       <div class="input-wrap"><input type="number" class="m24" value="${price}" placeholder="0"><small>24 mån</small></div>
     </div>`;
   }
   const m6a=state.prices[pid]?.m6a??'',m6b=state.prices[pid]?.m6b??'',m12=state.prices[pid]?.m12??'';
   return `<div class="plan" data-cat="${cat}" data-id="${pid}">
-    <div class="left"><label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label></div>
-    <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1)</small></div>
-    <div class="input-wrap"><input type="number" class="m6b" value="${m6b}" placeholder="0"><small>6 mån (2)</small></div>
-    <div class="input-wrap"><input type="number" class="m12" value="${m12}" placeholder="0"><small>12 mån</small></div>
+    <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
+    <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1) / mån</small></div>
+    <div class="input-wrap"><input type="number" class="m6b" value="${m6b}" placeholder="0"><small>6 mån (2) / mån</small></div>
+    <div class="input-wrap"><input type="number" class="m12" value="${m12}" placeholder="0"><small>12 mån / mån</small></div>
     ${nf}
   </div>`;
 }
@@ -153,46 +132,63 @@ function buildUI(){
   const grid=$('#widgets');grid.innerHTML='';
   GROUPS.forEach(g=>{
     const d=document.createElement('details');d.className='widget';d.open=true;
-    d.innerHTML=`<summary><span>${g.cat}</span><span class="widget-hint">Klicka för att fälla in / öppna</span></summary>
+    d.innerHTML=`<summary><span>${g.cat}</span><span class="icon">▼</span></summary>
       <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>`;
     grid.appendChild(d);
   });
-  attachEvents();updateTotals(false);
+  attachEvents();updateTotals();
 }
 
 function attachEvents(){
-  $$('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{state.selections[r.closest('.plan').dataset.cat]=r.value;updateTotals(true);}));
+  // Gör radioknappar klickbara urval (toggle)
+  $$('input[type=radio]').forEach(r=>{
+    r.addEventListener('click',e=>{
+      const cat=r.closest('.plan').dataset.cat;
+      if(state.selections[cat]===r.value){ // klicka ur
+        r.checked=false;
+        delete state.selections[cat];
+      }else{
+        state.selections[cat]=r.value;
+      }
+      updateTotals();
+    });
+  });
+
   $$('input[type=number]').forEach(inp=>inp.addEventListener('input',()=>{
     const row=inp.closest('.plan'),pid=row.dataset.id;
     const a=+($('.m6a',row)?.value)||0,b=+($('.m6b',row)?.value)||0,c=+($('.m12',row)?.value)||0,d=+($('.m24',row)?.value)||0;
-    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null,m24:d||null};updateTotals(true);
+    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null,m24:d||null};
+    updateTotals();
   }));
-  $$('.nf').forEach(ch=>ch.addEventListener('change',()=>{state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals(true);}));
-  $('#themeBtn').addEventListener('click',()=>{const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';});
+
+  $$('.nf').forEach(ch=>ch.addEventListener('change',()=>{
+    state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;
+    updateTotals();
+  }));
+
+  $('#themeBtn').addEventListener('click',()=>{
+    const root=document.documentElement;
+    const dark=root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme',dark?'light':'dark');
+    $('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
+  });
   $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
 }
 
-function calcMonthly(p,a,b,c,d,nf){
-  if(d>0)return d+nf;
-  if(c>0)return c+nf;
-  return ((a+nf)+(b+nf))/2||0;
-}
-
 function updateTotals(){
-  let s6a=0,s6b=0;let selected=[];
+  let total6a=0,total6b=0;const selected=[];
   GROUPS.forEach(g=>{
     const pid=state.selections[g.cat];if(!pid)return;
-    const plan=g.plans.find(p=>p.id===pid);
     const p=state.prices[pid]||{};const a=+p.m6a||0,b=+p.m6b||0,c=+p.m12||0,d=+p.m24||0;
     let nf=0;if(g.cat==="Sportpaket"&&state.sportNF[pid])nf=NETFLIX_DELTA;
-    const monthly=calcMonthly(p,a,b,c,d,nf);
-    selected.push(`${plan.label} – ${fmt(monthly)}`);
-    if(d>0)s6a+=(d+nf)*24;
-    else if(c>0)s6a+=(c+nf)*12;
-    else{s6a+=(a+nf)*6;s6b+=(b+nf)*6;}
+    selected.push(`${g.cat}: ${pid} – ${fmt(a||b||c||d)}`);
+    total6a+=a+nf; total6b+=b+nf;
   });
-  const year=s6a+s6b,avg=year/12;
-  $('#s1').textContent=fmt(s6a);$('#s2').textContent=fmt(s6b);$('#year').textContent=fmt(year);$('#avg').textContent=fmt(avg);
+  const year=(total6a+total6b)*6,avg=(total6a+total6b)/2;
+  $('#s1').textContent=fmt(total6a);
+  $('#s2').textContent=fmt(total6b);
+  $('#year').textContent=fmt(year);
+  $('#avg').textContent=fmt(avg);
   $('#selectedList').innerHTML=selected.length?selected.map(s=>`<div class="item">${s}</div>`).join(''):'<div class="item muted">Inga val ännu</div>';
 }
 buildUI();
