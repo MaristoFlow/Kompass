@@ -1,26 +1,53 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bredband & TV Kostnadskalkylator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telia Bredband & TV Kalkylator</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>.highlight { background-color: #d8c47b33; transition: background-color 0.3s; }</style>
+  <style>
+    .highlight { background-color: #f3e7b3; transition: background-color 0.3s; }
+    .btn-option { 
+      border-radius: 0.75rem; 
+      border: 1px solid #ccc; 
+      padding: 0.5rem 0.75rem; 
+      background-color: white; 
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-option:hover { background-color: #f0f0ff; border-color: #7c3aed; }
+    .btn-active { background-color: #f3e7b3; border-color: #d4a017; font-weight: 600; }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900">
-  <div class="max-w-4xl mx-auto p-6 grid md:grid-cols-1 gap-6">
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-6 text-center">Telia Bredband & TV Kostnadskalkylator</h1>
 
-    <div class="space-y-4">
-      <h2 class="text-lg font-semibold mb-2">Förvalda paket från Telia</h2>
-      <div id="presetPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        <button class="border rounded-xl px-2 py-1" data-monthly="499" data-tv="0">TV Mycket 499 kr</button>
-        <button class="border rounded-xl px-2 py-1" data-monthly="499" data-tv="0">Streaming Mest 499 kr</button>
-        <button class="border rounded-xl px-2 py-1" data-monthly="299" data-tv="0">Streaming Kampanj 299 kr</button>
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Vänster: Bredband -->
+      <div>
+        <h2 class="text-lg font-semibold mb-3 text-indigo-700">Bredband</h2>
+        <div id="broadbandPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
+
+        <h3 class="text-md font-semibold mb-2 text-indigo-700">Sportpaket</h3>
+        <div id="sportPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+      </div>
+
+      <!-- Höger: TV -->
+      <div>
+        <h2 class="text-lg font-semibold mb-3 text-indigo-700">TV & Streaming</h2>
+        <div id="tvPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
+
+        <h3 class="text-md font-semibold mb-2 text-indigo-700">Filmpaket</h3>
+        <div id="filmPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
       </div>
     </div>
 
-    <h1 class="text-2xl font-bold mb-4">Kalkylator</h1>
-    <div class="bg-white rounded-2xl shadow p-4 space-y-4">
+    <!-- Kalkylkort -->
+    <div class="mt-10 bg-white rounded-2xl shadow p-6 max-w-2xl mx-auto space-y-4">
+      <h2 class="text-lg font-semibold text-center">Kalkylator</h2>
+
       <div>
         <label class="block text-sm font-medium mb-1">Hastighet</label>
         <select id="speed" class="w-full border rounded-xl px-3 py-2">
@@ -45,31 +72,13 @@
       </div>
 
       <div>
-        <label class="block text-sm font-medium mb-1">Premium-paket/mån (t.ex. tillval sport/film)</label>
+        <label class="block text-sm font-medium mb-1">Premium sport/film/mån</label>
         <input id="premium" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 99" />
       </div>
 
-      <div>
-        <label class="block text-sm font-medium mb-1">Kampanjpris/mån (om någon)</label>
-        <input id="campaignMonthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 249" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Kampanjens längd (mån)</label>
-        <input id="campaignMonths" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 3" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Pris efter 6 månader (om skiljer sig)</label>
-        <input id="after6" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 449" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Bindningstid</label>
-        <div class="flex gap-2">
-          <button id="btn12" class="flex-1 border rounded-xl px-3 py-2">12 mån</button>
-          <button id="btn24" class="flex-1 border rounded-xl px-3 py-2">24 mån</button>
-        </div>
+      <div class="flex gap-2">
+        <button id="btn12" class="flex-1 border rounded-xl px-3 py-2">12 mån</button>
+        <button id="btn24" class="flex-1 border rounded-xl px-3 py-2">24 mån</button>
       </div>
 
       <label class="inline-flex items-center gap-2 text-sm">
@@ -78,7 +87,7 @@
       </label>
 
       <div id="result" class="rounded-xl bg-slate-100 p-4 text-sm mt-2">
-        <div class="opacity-70">Fyll i värden eller klicka på ett förvalt paket ovan.</div>
+        <div class="opacity-70">Klicka på paket till vänster/höger för att börja räkna.</div>
       </div>
     </div>
   </div>
@@ -88,38 +97,68 @@
     let contractMonths = 12;
 
     const el = id => document.getElementById(id);
-    const inputs = ["monthly","tv","premium","campaignMonthly","campaignMonths","after6"];
 
-    // Förvalda pris-knappar
-    document.querySelectorAll("#presetPrices button").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        const mon = +btn.getAttribute("data-monthly");
-        const tvp = +btn.getAttribute("data-tv");
-        el("monthly").value = mon;
-        el("tv").value = tvp;
-        markActive(el("monthly"));
-        markActive(el("tv"));
-        update();
+    const broadbandPrices = [
+      { name:"150 Mbit/s", price:349 },
+      { name:"300 Mbit/s", price:389 },
+      { name:"500 Mbit/s", price:439 },
+      { name:"600 Mbit/s", price:489 },
+      { name:"1000 Mbit/s", price:599 },
+    ];
+    const tvPrices = [
+      { name:"TV Mini", price:249 },
+      { name:"TV Mellan", price:399 },
+      { name:"TV Max", price:499 },
+      { name:"TV Mycket", price:549 },
+      { name:"Streaming Mer", price:399 },
+      { name:"Streaming Maxad", price:499 },
+    ];
+    const sportPrices = [
+      { name:"Sport Bas", price:199 },
+      { name:"Sport Stor", price:299 },
+      { name:"C More Sport", price:399 },
+    ];
+    const filmPrices = [
+      { name:"Film Bas", price:149 },
+      { name:"Film Stor", price:249 },
+      { name:"HBO Max", price:149 },
+    ];
+
+    function createButtons(id, arr, targetInput){
+      const div = el(id);
+      arr.forEach(p=>{
+        const btn=document.createElement("button");
+        btn.className="btn-option";
+        btn.innerHTML=`${p.name}<br><span class='text-sm text-indigo-600 font-semibold'>${p.price} kr</span>`;
+        btn.onclick=()=>{
+          targetInput.value=p.price;
+          highlightInput(targetInput);
+          document.querySelectorAll(`#${id} .btn-option`).forEach(b=>b.classList.remove("btn-active"));
+          btn.classList.add("btn-active");
+          update();
+        };
+        div.appendChild(btn);
       });
-    });
+    }
 
-    // Bindningstid
-    el("btn12").onclick = ()=>{ contractMonths=12; highlightButtons(); update(); };
-    el("btn24").onclick = ()=>{ contractMonths=24; highlightButtons(); update(); };
+    createButtons("broadbandPrices", broadbandPrices, el("monthly"));
+    createButtons("tvPrices", tvPrices, el("tv"));
+    createButtons("sportPrices", sportPrices, el("premium"));
+    createButtons("filmPrices", filmPrices, el("premium"));
+
+    el("btn12").onclick=()=>{ contractMonths=12; highlightButtons(); update(); };
+    el("btn24").onclick=()=>{ contractMonths=24; highlightButtons(); update(); };
     function highlightButtons(){
       el("btn12").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===12?"border-indigo-500 bg-indigo-50":"");
       el("btn24").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===24?"border-indigo-500 bg-indigo-50":"");
     }
     highlightButtons();
 
-    // Inputs
-    inputs.forEach(id => {
-      el(id).addEventListener("input", ()=>{ markActive(el(id)); update(); });
-    });
-    el("includeVAT").addEventListener("change", update);
-    el("speed").addEventListener("change", update);
+    ["monthly","tv","premium"].forEach(id=>el(id).addEventListener("input",()=>{highlightInput(el(id));update();}));
+    el("includeVAT").addEventListener("change",update);
+    el("speed").addEventListener("change",update);
 
-    function markActive(input){
+    function highlightInput(input){
       if(input.value!=="") input.classList.add("highlight");
       else input.classList.remove("highlight");
     }
@@ -128,25 +167,18 @@
       const monthly = +el("monthly").value || 0;
       const tv = +el("tv").value || 0;
       const premium = +el("premium").value || 0;
-      const campaignMonthly = +el("campaignMonthly").value || monthly;
-      const campaignMonths = +el("campaignMonths").value || 0;
-      const after6 = +el("after6").value || monthly;
       const includeVAT = el("includeVAT").checked;
       const m = contractMonths;
 
       let sum = 0;
-      for(let i=1; i<=m; i++){
-        let price = monthly;
-        if(i <= campaignMonths) price = campaignMonthly;
-        else if(i <= 6) price = after6;
-        sum += price + tv + premium;
-      }
+      for(let i=1;i<=m;i++) sum += monthly + tv + premium;
       if(includeVAT) sum *= (1+VAT);
-      const perMonth = sum / m;
-      const yearly = perMonth * 12;
+
+      const perMonth = sum/m;
+      const yearly = perMonth*12;
 
       el("result").innerHTML = `
-        <div><b>${el("speed").value}</b> · ${m} mån · ${includeVAT ? "inkl." : "exkl."} moms</div>
+        <div><b>${el("speed").value}</b> · ${m} mån · ${includeVAT?"inkl.":"exkl."} moms</div>
         <div class="text-xl font-semibold mt-2">${formatSEK(perMonth)} <span class="text-sm">/ mån</span></div>
         <div class="mt-1 opacity-80">Årskostnad: ${formatSEK(yearly)}</div>
         <div class="opacity-80">Totalsumma ${m} mån: ${formatSEK(sum)}</div>
@@ -154,7 +186,7 @@
     }
 
     function formatSEK(n){
-      return new Intl.NumberFormat("sv-SE", { style:"currency", currency:"SEK", maximumFractionDigits:0 }).format(Math.round(n));
+      return new Intl.NumberFormat("sv-SE",{style:"currency",currency:"SEK",maximumFractionDigits:0}).format(Math.round(n));
     }
   </script>
 </body>
