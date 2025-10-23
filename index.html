@@ -63,13 +63,20 @@ details[open] summary .icon{transform:rotate(180deg)}
 
 .nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
 .nf-icon{font-size:12px;font-weight:800;color:var(--accent);border:1px solid var(--line);border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+.nf-icon:hover::after{content:"Netflix +100 kr/mån";position:absolute;transform:translateY(24px);
+background:var(--card);color:var(--text);font-size:11px;border:1px solid var(--line);
+padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
 <header>
   <h1>Kompassen</h1>
   <div class="right">
-    <div class="searchbar"><span>🔎</span><input id="search" placeholder="Sök paket …"><button id="clearSearch" class="btn ghost">Rensa</button></div>
+    <div class="searchbar" title="Sök t.ex. Netflix, Premier League, SHL, Viaplay …">
+      🔎 <input id="search" placeholder="Sök paket, kanal eller sport …">
+      <button id="clearSearch" class="btn ghost">Rensa</button>
+    </div>
     <button id="themeBtn" class="btn">Mörkt läge</button>
     <button id="resetBtn" class="btn ghost">Återställ</button>
   </div>
@@ -96,13 +103,32 @@ details[open] summary .icon{transform:rotate(180deg)}
 
 <script>
 const GROUPS=[
-  {cat:"Bredband",plans:[{id:"bb1",label:"Bredband 1"},{id:"bb2",label:"Bredband 2"},{id:"bb3",label:"Bredband 3"}]},
-  {cat:"TV-paket",plans:[{id:"mini",label:"Mini"},{id:"mellan",label:"Mellan"},{id:"mycket",label:"Mycket"}]},
-  {cat:"Premiumpaket",plans:[{id:"mer",label:"Mer"},{id:"maxad",label:"Maxad"},{id:"mest",label:"Mest"}]},
-  {cat:"Sportpaket",plans:[{id:"sportSmall",label:"Lilla S",sport:true},{id:"sportLarge",label:"Stora S",sport:true},{id:"sportLargest",label:"Största S",sport:true}]},
-  {cat:"Mobilabonnemang",plans:[{id:"mob1",label:"Mobil 1"},{id:"mob2",label:"Mobil 2"},{id:"mob3",label:"Mobil 3"}]},
-  {cat:"Övrigt",plans:[{id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},{id:"forsakring",label:"Försäkring"},{id:"egen",label:"Eget val (fyll i själv)"}]}
+  {cat:"Bredband",plans:[
+    {id:"bb1",label:"Bredband 1"},
+    {id:"bb2",label:"Bredband 2"},
+    {id:"bb3",label:"Bredband 3"}]},
+  {cat:"TV-paket",plans:[
+    {id:"tvMini",label:"Mini"},
+    {id:"tvMellan",label:"Mellan"},
+    {id:"tvMycket",label:"Mycket"}]},
+  {cat:"Premiumpaket",plans:[
+    {id:"film1",label:"All Film & Serier: Netflix + Viaplay + Max + TV4"},
+    {id:"film2",label:"All Film & Serier: Netflix + Prime + Max + TV4"},
+    {id:"film3",label:"All Film & Serier: Viaplay + Max + TV4"}]},
+  {cat:"Sportpaket",plans:[
+    {id:"sportSmall",label:"Lilla S",sport:true,tags:["shl","allsvenskan"]},
+    {id:"sportLarge",label:"Stora S",sport:true,tags:["premier league","champions league","formula 1","f1"]},
+    {id:"sportLargest",label:"Största S",sport:true,tags:["premier league","champions league","shl","f1","la liga","serie a"]}]},
+  {cat:"Mobilabonnemang",plans:[
+    {id:"mob1",label:"Mobil 1"},
+    {id:"mob2",label:"Mobil 2"},
+    {id:"mob3",label:"Mobil 3"}]},
+  {cat:"Övrigt",plans:[
+    {id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},
+    {id:"forsakring",label:"Försäkring"},
+    {id:"egen",label:"Eget val (fyll i själv)"}]}
 ];
+
 const NETFLIX_DELTA=100;
 let state={selections:{},prices:{},sportNF:{}};
 const fmt=v=>`${(v||0).toFixed(0)} SEK`;
@@ -112,16 +138,15 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 function planRowHTML(cat,plan){
   const pid=plan.id;
   const checked=state.selections[cat]===pid?'checked':'';
-  const price=state.prices[pid]?.m24??'';
   const nf=plan.sport?`<label class="nf-toggle"><input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}><div class="nf-icon">N</div></label>`:`<span></span>`;
   if(plan.type==="mobile"){
     return `<div class="plan mobile" data-cat="${cat}" data-id="${pid}">
       <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
-      <div class="input-wrap"><input type="number" class="m24" value="${price}" placeholder="0"><small>24 mån</small></div>
+      <div class="input-wrap"><input type="number" class="m24" value="${state.prices[pid]?.m24||''}" placeholder="0"><small>24 mån</small></div>
     </div>`;
   }
   const m6a=state.prices[pid]?.m6a??'',m6b=state.prices[pid]?.m6b??'',m12=state.prices[pid]?.m12??'';
-  return `<div class="plan" data-cat="${cat}" data-id="${pid}">
+  return `<div class="plan" data-cat="${cat}" data-id="${pid}" data-tags="${(plan.tags||[]).join(',')}">
     <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
     <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1) / mån</small></div>
     <div class="input-wrap"><input type="number" class="m6b" value="${m6b}" placeholder="0"><small>6 mån (2) / mån</small></div>
@@ -163,6 +188,18 @@ function attachEvents(){
     root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
   });
   $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
+
+  // sökning
+  $('#search').addEventListener('input',filterPlans);
+  $('#clearSearch').addEventListener('click',()=>{$('#search').value='';filterPlans();});
+}
+
+function filterPlans(){
+  const q=$('#search').value.trim().toLowerCase();
+  $$('.plan').forEach(p=>{
+    const tags=(p.dataset.tags||'')+' '+p.textContent.toLowerCase();
+    p.classList.toggle('hidden',q && !tags.includes(q));
+  });
 }
 
 function updateTotals(){
@@ -171,7 +208,8 @@ function updateTotals(){
     const pid=state.selections[g.cat];if(!pid)return;
     const p=state.prices[pid]||{};const a=+p.m6a||0,b=+p.m6b||0,c=+p.m12||0,d=+p.m24||0;
     let nf=0;if(g.cat==="Sportpaket"&&state.sportNF[pid])nf=NETFLIX_DELTA;
-    selected.push(`${g.cat}: ${pid} – ${fmt(a||b||c||d)}`);
+    const month=(a||b||c||d)+nf;
+    selected.push(`${g.cat}: ${g.plans.find(x=>x.id===pid).label} – ${fmt(month)}`);
     total6a+=a+nf; total6b+=b+nf;
   });
   const year=(total6a+total6b)*6,avg=(total6a+total6b)/2;
