@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="sv" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bredband Kostnadskompass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <div id="app" class="min-h-screen"></div>
+
+    <script>
+      // ---------- DATA ----------
+      const VAT = 0.25;
+      const state = {
+        dark: false,
+        includeVAT: true,
+        contractMonths: 12,
+        selectedSpeed: "100/100",
+        speedOptions: ["100/100","150/150","250/250","300/300","500/500","600/600","1000/1000"],
+        plans: [
+          { id:"A", name:"Alternativ A", available:true, monthly:399, tvMonthly:99, setupFee:0,   campaignMonths:3, campaignMonthly:249, notes:"Fri startavgift, 3 mån kampanj" },
+          { id:"B", name:"Alternativ B", available:true, monthly:429, tvMonthly:0,  setupFee:199, campaignMonths:0, campaignMonthly:0,   notes:"TV ingår" },
+          { id:"C", name:"Alternativ C", available:true, monthly:369, tvMonthly:79, setupFee:395, campaignMonths:1, campaignMonthly:199, notes:"Låg kampanj första månaden" },
+          { id:"D", name:"Alternativ D", available:true, monthly:459, tvMonthly:49, setupFee:0,   campaignMonths:6, campaignMonthly:299, notes:"6 mån introduktionspris" },
+        ],
+      };
+
+      // ---------- HELPERS ----------
+      const el = (tag, attrs={}, children=[]) => {
+        const node = document.createElement(tag);
+        Object.entries(attrs).forEach(([k,v]) => {
+          if (k === "class") node.className = v;
+          else if (k === "for") node.htmlFor = v;
+          else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
+          else if (k === "checked") node.checked = !!v;
+          else if (k === "value") node.value = v;
+          else node.setAttribute(k, v);
+        });
+        if (!Array.isArray(children)) children = [children];
+        children.forEach(c => {
+          if (c == null) return;
+          if (typeof c === "string") node.appendChild(document.createTextNode(c));
+          else node.appendChild(c);
+        });
+        return node;
+      };
+
+      const formatSEK = n =>
+        new Intl.NumberFormat("sv-SE", { style:"currency", currency:"SEK", maximumFractionDigits:0 }).format(Math.round(n));
+
+      const priceWithVAT = (x, include) => include ? Math.max(0,x)*(1+VAT) : Math.max(0,x);
+
+      function calcTotals(p, months, includeVAT) {
+        const cm = Math.min(Math.max(0, p.campaignMonths|0), months);
+        const rm = months - cm;
+        const campaignCost = cm > 0 ? Math.max(0, p.campaignMonthly) : Math.max(0, p.monthly);
+        const sumWithoutVAT = cm*(campaignCost + Math.max(0,p.tvMonthly))
+                            + rm*(Math.max(0,p.monthly) + Math.max(0,p.tvMonthly))
+                            + Math.max(0,p.setupFee);
+        const sum = includeVAT ? sumWithoutVAT*(1+VAT) : sumWithoutVAT;
+        const effectiveMonthly = sum / months;
+        const yearly = months >= 12 ? (sum/months)*12 : sum;
+        return { sum, effectiveMonthly, yearly };
+      }
+
+      function computeBestId() {
+        const rows = state.plans
+          .filter(p => p.available)
+          .map(p => ({ id:p.id, ...calcTotals(p, state.contractMonths, state.includeVAT) }));
+        if (!rows.length) return null;
+        rows.sort((a,b) => a.effectiveMonthly - b.effectiveMonthly);
+        return rows[0].id;
+      }
+
+      // ---------- RENDER ----------
+      function render() {
+        document.documentElement.classList.toggle("dark", state.dark);
+
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+
+        const container = el("div", { class:"max-w-6xl mx-auto px-4 py-8 text-slate-900 dark:text-slate-100" }, [
+          // Header
+          el("header", { class:"flex items-center justify-between mb-6" }, [
+            el("div", {}, [
+              el("h1", { class:"text-2xl sm:text-3xl font-bold tracking-tight" }, "Bredband Kostnadskompass"),
+              el("p", { class:"text-sm opacity-80" }, `Jämför 4 alternativ för ${state.selectedSpeed}`)
+            ]),
+            el("label", { class:"inline-flex items-center gap-2 text-sm" }, [
+              el("input", {
+                type:"checkbox",
+                class:"h-4 w-4 accent-indigo-600",
+                checked: state.dark,
+                onChange: e => { state.dark = e.target.checked; render(); }
+              }),
+              "Mörkt läge"
+            ])
+          ]),
+
+          // Controls
+          el("div", { class:"grid gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 mb-6" }, [
+            // Speed
+            el("div", { class:"bg-white dark:bg-slate-800 rounded-2xl shadow p-4" }, [
+              el("label", { class:"block text-sm font-medium mb-1" }, "Hastighet"),
+              (function(){
+                const s = el("select", {
+                  class:"w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2",
+                  value: state.selectedSpeed,
+                  onChange: e => { state.selectedSpeed = e.target.value; render(); }
+                });
+                state.speedOptions.forEach(sp => s.appendChild(el("option", { value: sp }, `${sp} Mbit/s`)));
+                return s;
+              })()
+            ]),
+            // Contract
+            el("div", { class:"bg-white dark:bg-slate-800 rounded-2xl shadow p-4" }, [
+              el("label", { class:"block text-sm font-medium mb-1" }, "Bindningstid"),
+              el("div", { class:"flex gap-2" }, [12,24].map(m =>
+                el("button", {
+                  class: `flex-1 rounded-xl px-3 py-2 border text-sm ${
+                    state.contractMonths===m ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-500/20"
+                                              : "border-slate-300 dark:border-slate-700"}`
+                  , onClick: () => { state.contractMonths = m; render(); }
+                }, `${m} mån`)
+              ))
+            ]),
+            // VAT
+            el("div", { class:"bg-white dark:bg-slate-800 rounded-2xl shadow p-4" }, [
+              el("label", { class:"block text-sm font-medium mb-1" }, "Prisvisning"),
+              el("label", { class:"inline-flex items-center gap-2 text-sm" }, [
+                el("input", {
+                  type:"checkbox",
+                  class:"h-4 w-4 accent-indigo-600",
+                  checked: state.includeVAT,
+                  onChange: e => { state.includeVAT = e.target.checked; render(); }
+                }),
+                "Visa inkl. moms (25%)"
+              ])
+            ])
+          ]),
+
+          // Plan cards
+          (function renderCards(){
+            const bestId = computeBestId();
+            return el("div", { class:"grid gap-4 sm:grid-cols-2 lg:grid-cols-4" },
+              state.plans.map(p => {
+                const totals = calcTotals(p, state.contractMonths, state.includeVAT);
+                const card = el("div", {
+                  class:`relative rounded-2xl border shadow bg-white dark:bg-slate-800 ${
+                    p.available && p.id===bestId ? "border-indigo-500 ring-2 ring-indigo-300/50"
+                                                 : "border-slate-200 dark:border-slate-700"}`
+                }, [
+                  // Badge
+                  (p.available && p.id===bestId) ? el("div", { class:"absolute -top-2 left-3 text-xs px-2 py-1 rounded-full bg-indigo-600 text-white shadow" }, "Bäst värde") : null,
+
+                  // Header row
+                  el("div", { class:"p-4 flex items-center justify-between" }, [
+                    el("div", { class:"flex items-center gap-2" }, [
+                      el("span", { class:"inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 font-semibold" }, p.id),
+                      (function(){
+                        const i = el("input", {
+                          class:"bg-transparent border-b border-dashed border-slate-300 dark:border-slate-600 focus:outline-none px-1 text-sm",
+                          value: p.name,
+                          onInput: e => { p.name = e.target.value; }
+                        });
+                        i.addEventListener("change", render);
+                        return i;
+                      })()
+                    ]),
+                    el("label", { class:"inline-flex items-center gap-2 text-xs opacity-80" }, [
+                      (function(){
+                        const c = el("input", {
+                          type:"checkbox",
+                          class:"h-4 w-4 accent-indigo-600",
+                          checked: p.available,
+                          onChange: e => { p.available = e.target.checked; render(); }
+                        });
+                        return c;
+                      })(),
+                      "Tillgänglig"
+                    ])
+                  ]),
+
+                  // Inputs
+                  el("div", { class:"px-4 pb-4 space-y-3" }, [
+                    numberField("Ord. pris/mån", p.monthly, v => { p.monthly = v; render(); }, "SEK"),
+                    numberField("TV/mån",        p.tvMonthly, v => { p.tvMonthly = v; render(); }, "SEK"),
+                    numberField("Start/Installation", p.setupFee, v => { p.setupFee = v; render(); }, "SEK"),
+
+                    el("div", { class:"grid grid-cols-2 gap-2" }, [
+                      numberField("Kampanj (mån)", p.campaignMonths, v => { p.campaignMonths = Math.max(0, Math.floor(v||0)); render(); }),
+                      numberField("Kampanjpris/mån", p.campaignMonthly, v => { p.campaignMonthly = v; render(); }, "SEK"),
+                    ]),
+
+                    // Notes
+                    el("div", {}, [
+                      el("label", { class:"block text-xs font-medium mb-1" }, "Anteckning"),
+                      (function(){
+                        const n = el("input", {
+                          class:"w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm",
+                          placeholder:"Ex: TV ingår, fri startavgift, etc.",
+                          value: p.notes || ""
+                        });
+                        n.addEventListener("input", e => { p.notes = e.target.value; });
+                        n.addEventListener("change", render);
+                        return n;
+                      })()
+                    ]),
+
+                    // Totals
+                    el("div", { class:"mt-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-3" }, [
+                      el("div", { class:"text-xs opacity-80 mb-1" }, `Kalkyl (${state.contractMonths} mån, ${state.includeVAT ? "inkl." : "exkl."} moms)`),
+                      el("div", { class:"text-2xl font-semibold" }, [
+                        formatSEK(totals.effectiveMonthly),
+                        el("span", { class:"text-sm opacity-70" }, " / mån")
+                      ]),
+                      el("div", { class:"text-sm opacity-80" }, `Årskostnad: ${formatSEK(totals.yearly)}`),
+                      el("div", { class:"text-sm opacity-80" }, `Totalsumma ${state.contractMonths} mån: ${formatSEK(totals.sum)}`),
+                    ])
+                  ])
+                ]);
+                return card;
+              })
+            );
+          })(),
+
+          // Footer
+          el("footer", { class:"mt-8 text-xs opacity-70" },
+            "* Enfilslösning utan byggsteg. Moms 25% när aktiverad. Alla priser är redigerbara. Lägg till faktiska operatörer vid behov."
+          )
+        ]);
+
+        app.appendChild(container);
+      }
+
+      function numberField(label, value, onChange, suffix) {
+        const wrap = el("div");
+        wrap.appendChild(el("label", { class:"block text-xs font-medium mb-1" }, label));
+        const row = el("div", { class:"flex items-center gap-2" });
+        const input = el("input", {
+          type:"number",
+          inputmode:"decimal",
+          class:"w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2",
+          value: (isNaN(value) ? "" : value)
+        });
+        input.addEventListener("input", e => onChange(Number(e.target.value)));
+        if (suffix) row.appendChild(input), row.appendChild(el("span",{class:"text-xs opacity-70 min-w-[2ch]"}, suffix));
+        else row.appendChild(input);
+        wrap.appendChild(row);
+        return wrap;
+      }
+
+      // First render
+      render();
+    </script>
+  </body>
+</html>
