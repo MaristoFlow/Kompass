@@ -1,89 +1,95 @@
 <!doctype html>
 <html lang="sv" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Telia-kalkylator 3.9</title>
-<style>
-:root{
-  --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
-  --gold:#d8b55f;--gold-ink:#1b1400;--shadow:0 6px 24px rgba(10,20,40,.08);
-  --match:#fff6d6
-}
-html[data-theme=dark]{
-  --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
-  --gold:#caa24e;--gold-ink:#0d0b00;--shadow:0 8px 28px rgba(0,0,0,.35);
-  --match:#2d2615
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-header{
-  position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.05) blur(6px);
-  background:color-mix(in oklab, var(--bg) 90%, transparent);
-  border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between
-}
-h1{margin:0;font-size:18px;font-weight:800}
-.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:var(--card);color:inherit;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow)}
-.btn.ghost{background:transparent}
-.searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
-.searchbar input{all:unset;width:240px}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Telia-kalkylator 3.9</title>
+  <style>
+    :root{
+      --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
+      --gold:#d8b55f;--gold-ink:#1b1400;--shadow:0 6px 24px rgba(10,20,40,.08);
+      --match:#fff6d6
+    }
+    html[data-theme=dark]{
+      --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
+      --gold:#caa24e;--gold-ink:#0d0b00;--shadow:0 8px 28px rgba(0,0,0,.35);
+      --match:#2d2615
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    header{
+      position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.05) blur(6px);
+      background:color-mix(in oklab, var(--bg) 90%, transparent);
+      border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between
+    }
+    h1{margin:0;font-size:18px;font-weight:800}
+    .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn{border:1px solid var(--line);background:var(--card);color:inherit;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow)}
+    .btn.ghost{background:transparent}
+    .searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
+    .searchbar input{all:unset;width:260px}
+    main{max-width:1200px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
 
-main{max-width:1200px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+    /* Summary top */
+    .summary-top{text-align:center;padding:18px 14px}
+    .summary-top h2{margin:0 0 6px 0}
+    .summary-grid{
+      display:flex;flex-wrap:wrap;justify-content:center;gap:16px;
+    }
+    .summary-grid .box{
+      min-width:180px;padding:8px 6px;line-height:1.3;
+    }
+    .summary-grid .box div:first-child{
+      font-size:13px;color:var(--muted);
+    }
+    .summary-grid .val{
+      font-size:20px;font-weight:800;margin-top:2px;
+    }
+    .bump{animation:bump .35s ease}
+    @keyframes bump{0%{transform:translateY(-1px)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
 
-/* Summary top */
-.summary-top{text-align:center;padding:18px 14px}
-.summary-top h2{margin:0 0 6px 0}
-.summary-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:14px}
-.summary-grid .box{min-width:160px}
-.summary-grid .val{font-size:24px;font-weight:900}
-.bump{animation:bump .35s ease}@keyframes bump{0%{transform:translateY(-1px)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
+    /* Compact widgets grid */
+    .layout{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
+    details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    details.widget>summary{
+      list-style:none;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800
+    }
+    details.widget>summary::-webkit-details-marker{display:none}
+    .widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
 
-/* Compact widgets grid */
-.layout{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
-details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
-details.widget>summary{
-  list-style:none;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800
-}
-details.widget>summary::-webkit-details-marker{display:none}
-.widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
-
-/* Plan rows — compact */
-.plan{
-  display:grid;grid-template-columns:auto 80px 80px auto;align-items:center;gap:8px;
-  border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;transition:background .15s ease, border-color .15s ease, box-shadow .15s ease
-}
-.plan:hover{background:color-mix(in oklab, var(--card) 80%, var(--match))}
-.plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 28%, transparent)}
-.plan .left{display:flex;align-items:center;gap:8px}
-.plan .info{
-  width:18px;height:18px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
-  font-size:11px;color:var(--muted);cursor:pointer
-}
-.plan .info[title]{}
-
-.input-wrap{display:flex;flex-direction:column;gap:2px}
-.input-wrap small{opacity:.7;font-size:10.5px}
-.input-wrap input[type=number]{
-  width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 6px;text-align:right;font-weight:600;
-  transition:background .12s ease, border-color .12s ease, box-shadow .12s ease
-}
-.input-wrap input.active{background:var(--gold);color:var(--gold-ink);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset;border-color:color-mix(in oklab, var(--gold) 60%, var(--line))}
-
-/* Sport Netflix toggle */
-.nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
-.nf-toggle input{accent-color:var(--accent)}
-.badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-.match{background:var(--match)}
-</style>
+    .plan{
+      display:grid;grid-template-columns:auto 80px 80px auto;align-items:center;gap:8px;
+      border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;transition:background .15s ease,border-color .15s ease,box-shadow .15s ease
+    }
+    .plan:hover{background:color-mix(in oklab, var(--card) 80%, var(--match))}
+    .plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 28%, transparent)}
+    .plan .left{display:flex;align-items:center;gap:8px}
+    .plan .info{
+      width:18px;height:18px;border-radius:999px;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
+      font-size:11px;color:var(--muted);cursor:pointer
+    }
+    .input-wrap{display:flex;flex-direction:column;gap:2px}
+    .input-wrap small{opacity:.7;font-size:10.5px}
+    .input-wrap input[type=number]{
+      width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 6px;text-align:right;font-weight:600;
+      transition:background .12s ease,border-color .12s ease,box-shadow .12s ease
+    }
+    .input-wrap input.active{
+      background:var(--gold);color:var(--gold-ink);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset;border-color:color-mix(in oklab, var(--gold) 60%, var(--line))
+    }
+    .nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
+    .nf-toggle input{accent-color:var(--accent)}
+    .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+    .match{background:var(--match)}
+  </style>
 </head>
 <body>
 <header>
   <h1>Telia-kalkylator</h1>
   <div class="right">
-    <div class="searchbar" title="Sök på paket, kanaler eller sport: Mini, Mellan, Mycket, Netflix, Premier League, SHL, TV4, Viaplay, Max ...">
-      🔎 <input id="search" placeholder="Sök paket, kanaler eller sport ...">
+    <div class="searchbar" title="Sök paket, kanaler eller sport – exempelvis Hudiksvall, Gävleborg, postnummer …">
+      🔎 <input id="search" placeholder="Sök paket, kanaler, sport eller plats (t.ex. Hudiksvall) …">
       <button id="clearSearch" class="btn ghost">Rensa</button>
     </div>
     <button id="themeBtn" class="btn">Mörkt läge</button>
@@ -110,41 +116,50 @@ details.widget>summary::-webkit-details-marker{display:none}
 <script>
 /* ==================== DATA ==================== */
 const GROUPS = [
-  { cat: "Bredband", plans: [
-    { id:"bb100",  label:"100/100 Mbit/s",  tip:"Passar 1–2 personer, surf/HD-streaming.", tags:"bredband fiber 100 100/100 internet" },
-    { id:"bb300",  label:"300/300 Mbit/s",  tip:"För familjer med flera enheter & streaming.", tags:"bredband fiber 300 300/300 internet familj" },
-    { id:"bb1000", label:"1000/1000 Mbit/s",tip:"Maxprestanda, spel & 4K/8K media.",        tags:"bredband fiber gigabit 1000/1000 spel 4k 8k" }
-  ]},
-  { cat: "TV grundpaket", plans: [
-    { id:"mini",   label:"TV Mini",   tip:"Basutbud ~19 kanaler + TV4 Play.",             tags:"tv mini tv4 play bas sjuan kanal5 kanal9" },
-    { id:"mellan", label:"TV Mellan", tip:"~36 kanaler + Britbox, familjefavoriter.",     tags:"tv mellan britbox familj film serier" },
-    { id:"mycket", label:"TV Mycket", tip:"~48 kanaler inkl. Viaplay Medium + Max Basic.",tags:"tv mycket viaplay max hbo film serier" }
-  ]},
-  { cat: "Premium paket", plans: [
-    { id:"mer",   label:"Streaming Mer",   tip:"Netflix, Max Basic, Disney+ — lagom mix.", tags:"premium mer netflix hbo max disney familj" },
-    { id:"maxad", label:"Streaming Maxad", tip:"Netflix + Disney+ + Prime + Max — mer allt.", tags:"premium maxad netflix prime disney hbo" },
-    { id:"mest",  label:"Streaming Mest",  tip:"Störst mix inkl. Viaplay & TV4 Play Plus.", tags:"premium mest viaplay tv4 netflix hbo disney" }
-  ]},
-  { cat: "Sport paket", plans: [
-    { id:"sportSmall",  label:"Lilla Sport",   tip:"Allsvenskan, LaLiga, ATP m.m.", tags:"sport lilla allsvenskan laliga tennis atp" , sport:true },
-    { id:"sportLarge",  label:"Stora Sport",   tip:"CL, PL, F1, mer internationellt.", tags:"sport stora champions league premier league f1 formel 1", sport:true },
-    { id:"sportLargest",label:"Största Sport", tip:"All sport inkl. SHL, golf, F1.", tags:"sport storsta shl golf premier league f1 champions", sport:true }
-  ]},
-  { cat: "Gamla Premium", plans: [
-    { id:"oldAllNVM4", label:"All Film & Serier (N + Viaplay + Max + TV4)", tip:"Samlad premiummix inkl. Netflix.", tags:"gamla premium netflix viaplay max tv4 film serier" },
-    { id:"oldAllNPM4", label:"All Film & Serier (N + Prime + Max + TV4)",   tip:"Netflix + Prime + Max + TV4.",     tags:"gamla premium netflix prime max tv4 film serier" },
-    { id:"oldVMT4",    label:"All Film & Serier (Viaplay + Max + TV4)",     tip:"Viaplay + Max + TV4 (utan Netflix).", tags:"gamla premium viaplay max tv4 film serier" }
-  ]}
+  {
+    cat: "Bredband",
+    plans: [
+      { id:"bb100",   label:"Bredband 100/100 Mbit/s", tip:"Passar 1–2 personer, surf/HD-streaming.", tags:"bredband fiber 100 100/100 internet" },
+      { id:"bb300",   label:"Bredband 300/300 Mbit/s", tip:"För familjer med flera enheter & streaming.", tags:"bredband fiber 300 300/300 internet familj" },
+      { id:"bb1000",  label:"Bredband 1000/1000 Mbit/s", tip:"Maxprestanda, spel & 4K/8K media.", tags:"bredband fiber gigabit 1000/1000 spel 4k 8k" }
+    ]
+  },
+  {
+    cat: "TV grundpaket",
+    plans: [
+      { id:"tvMini",   label:"TV Mini",   tip:"Basutbud ~19 kanaler + TV4 Play.",            tags:"tv mini tv4play bas sjuan kanal5 kanal9" },
+      { id:"tvMellan", label:"TV Mellan", tip:"~36 kanaler + BritBox, familjefavoriter.",    tags:"tv mellan britbox familj film serier" },
+      { id:"tvMycket", label:"TV Mycket", tip:"~46-48 kanaler inkl. sport, film och serier.", tags:"tv mycket viaplay max hbo film serier", 
+        // example campaign price found: 249 kr/mån första 6 månader. Source: Telia.tv-paket sida. :contentReference[oaicite:4]{index=4}
+        campaignFirst6:249, campaignSecond6:499 }
+    ]
+  },
+  {
+    cat: "Streaming-paket",
+    plans: [
+      { id:"streamingMer",   label:"Streaming Mer",   tip:"Netflix, Max Basic, Disney+ — lagom mix.", tags:"premium mer netflix hbo max disney familj" },
+      { id:"streamingMaxad", label:"Streaming Maxad", tip:"Netflix + Disney+ + Prime + Max — mer allt.", tags:"premium maxad netflix prime disney hbo" },
+      { id:"streamingMest",  label:"Streaming Mest",  tip:"Störst mix inkl. Viaplay & TV4 Play Plus.", tags:"premium mest viaplay tv4 netflix hbo" }
+    ]
+  },
+  {
+    cat: "Sportpaket",
+    plans: [
+      { id:"sportSmall",  label:"Lilla Sport",   tip:"Allsvenskan, LaLiga, ATP m.m.", tags:"sport lilla allsvenskan laliga tennis atp", sport:true },
+      { id:"sportLarge",  label:"Stora Sport",   tip:"CL, PL, F1, mer internationellt.", tags:"sport stora champions league premier league f1 formel 1", sport:true },
+      { id:"sportLargest",label:"Största Sport", tip:"All sport inkl. SHL, golf, F1.", tags:"sport storsta shl golf premier league f1 champions", sport:true }
+    ]
+  }
 ];
 
-// Netflix-tillägg gäller enbart sportrader och är alltid +100 kr/mån när togglad
+/* Netflix-tillägg gäller enbart sportpaket och är alltid +100 kr/mån när togglad */
 const NETFLIX_DELTA = 100;
 
 /* ==================== STATE ==================== */
 let state = {
   selections: {},   // { "Bredband": planId, ... }
   prices: {},       // { planId: {m6a:number|null, m6b:number|null} }
-  sportNF: {}       // { planId: boolean }  // endast för sport-planer
+  sportNF: {}       // { planId: boolean }  // only for sport plans
 };
 
 const fmt = v => `${(v||0).toFixed(0)} SEK`;
@@ -189,7 +204,6 @@ function buildUI(){
   const grid = $('#widgets');
   grid.innerHTML = '';
 
-  // skapa en widget per kategori
   GROUPS.forEach(group=>{
     const det = document.createElement('details');
     det.className = 'widget';
@@ -207,14 +221,11 @@ function buildUI(){
   });
 
   attachEvents();
-  // init visuals
   $$('.plan').forEach(updateRowVisual);
   updateTotals(false);
 }
 
-/* ==================== EVENTS ==================== */
 function attachEvents(){
-  // radioval per kategori
   $$('input[type=radio]').forEach(r=>{
     r.addEventListener('change', ()=>{
       const row = r.closest('.plan');
@@ -225,7 +236,6 @@ function attachEvents(){
     });
   });
 
-  // prisfält (6+6)
   $$('.m6a,.m6b').forEach(inp=>{
     const activate = ()=>{ inp.classList.add('active'); };
     inp.addEventListener('focus', activate);
@@ -239,11 +249,9 @@ function attachEvents(){
       inp.classList.toggle('active', inp.value!=='');
       updateTotals(true);
     });
-    // initial gold if has value
     inp.classList.toggle('active', inp.value!=='');
   });
 
-  // netflix toggles (sport)
   $$('.nf').forEach(ch=>{
     ch.addEventListener('change', ()=>{
       const row = ch.closest('.plan');
@@ -253,7 +261,6 @@ function attachEvents(){
     });
   });
 
-  // sök
   const search = $('#search'), clear = $('#clearSearch');
   search.addEventListener('input', ()=>{
     const q = search.value.trim().toLowerCase();
@@ -269,7 +276,6 @@ function attachEvents(){
     search.value=''; search.dispatchEvent(new Event('input'));
   });
 
-  // tema
   $('#themeBtn').addEventListener('click', ()=>{
     const root = document.documentElement;
     const dark = root.getAttribute('data-theme')==='dark';
@@ -277,24 +283,20 @@ function attachEvents(){
     $('#themeBtn').textContent = dark ? 'Mörkt läge' : 'Ljust läge';
   });
 
-  // återställ
   $('#resetBtn').addEventListener('click', ()=>{
     state = { selections:{}, prices:{}, sportNF:{} };
-    buildUI(); // bygger om och kopplar events igen
+    buildUI();
   });
 }
 
-/* ==================== VISUAL HELPERS ==================== */
 function updateRowVisual(row){
   if(!row) return;
-  const cat = row.dataset.cat;
+  const cat = row.dataset-cat;
   const selected = state.selections[cat] === row.dataset.id;
   row.classList.toggle('selected', !!selected);
 }
 
-/* ==================== TOTALS ==================== */
 function updateTotals(animate){
-  // summera två halvår + helår + snitt per månad
   let sum6a = 0;
   let sum6b = 0;
 
@@ -305,10 +307,8 @@ function updateTotals(animate){
     const a = +price.m6a || 0;
     const b = +price.m6b || 0;
 
-    // sport? lägg på Netflix om togglat
     let nf = 0;
-    const isSport = group.cat === "Sport paket";
-    if(isSport && state.sportNF[pid]) nf = NETFLIX_DELTA;
+    if(group.cat === "Sportpaket" && state.sportNF[pid]) nf = NETFLIX_DELTA;
 
     sum6a += (a + nf) * 6;
     sum6b += (b + nf) * 6;
@@ -329,5 +329,15 @@ function updateTotals(animate){
 /* ==================== INIT ==================== */
 buildUI();
 </script>
+
+<footer class="card" style="text-align:center;margin:18px 16px;">
+  <p>Mer info och länkar:</p>
+  <p>
+    <a href="https://www.netflix.com" target="_blank" rel="noopener">Netflix</a> |
+    <a href="https://www.viaplay.se" target="_blank" rel="noopener">Viaplay</a> |
+    <a href="https://www.tv4play.se" target="_blank" rel="noopener">TV4 Play</a>
+  </p>
+</footer>
+
 </body>
 </html>
