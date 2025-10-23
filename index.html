@@ -3,20 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bredbands- & TV-kompassen Pro 3.6</title>
+<title>Bredbands- & TV-kompassen Pro 3.7</title>
 <style>
 :root{
   --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
-  --gold:#d8b55f;--gold-ink:#1b1400;--hit:#eef3ff;--shadow:0 6px 24px rgba(10,20,40,.08)
+  --gold:#d8b55f;--gold-ink:#1b1400;--shadow:0 6px 24px rgba(10,20,40,.08)
 }
 html[data-theme=dark]{
   --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
-  --gold:#caa24e;--gold-ink:#0d0b00;--hit:#141b27;--shadow:0 8px 28px rgba(0,0,0,.35)
+  --gold:#caa24e;--gold-ink:#0d0b00;--shadow:0 8px 28px rgba(0,0,0,.35)
 }
-*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 header{
-  position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.1) blur(6px);
+  position:sticky;top:0;z-index:10;backdrop-filter:blur(6px);
   background:color-mix(in oklab, var(--bg) 90%, transparent);
   border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between
 }
@@ -26,60 +25,32 @@ h1{margin:0;font-size:18px;font-weight:800}
 .btn.ghost{background:transparent}
 .searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
 .searchbar input{all:unset;width:220px}
-
-main{max-width:1300px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:260px 1fr;gap:18px}
-@media (max-width:980px){main{grid-template-columns:1fr}}
+main{max-width:1300px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:18px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
-
-.layout{
-  display:grid;gap:16px;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-}
-.summa{grid-column:1/-1} /* fullbredd nederst */
-
-/* Vänster kolumn: prisvalörer */
-.aside-left{display:flex;flex-direction:column;gap:14px}
-.denoms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.denoms h3{margin:0 0 8px 0;font-size:12px;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
-.dbtn{font-size:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:6px 8px;cursor:pointer;text-align:center}
-.dbtn:hover{background:color-mix(in oklab, var(--gold) 18%, var(--card))}
-
-/* Widgets (center) */
+.summary-top{text-align:center;padding:24px 14px}
+.summary-top h2{margin:0 0 6px 0}
+.summary-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:18px}
+.summary-grid .box{min-width:160px}
+.summary-grid .val{font-size:24px;font-weight:900}
+.layout{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
 details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
 details.widget>summary{list-style:none;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800}
 details.widget>summary::-webkit-details-marker{display:none}
 .widget-body{border-top:1px dashed var(--line);padding:10px}
-
-.plan{
-  display:grid;grid-template-columns:1fr 120px 120px;align-items:center;gap:10px;
-  border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:transparent;transition:background .18s ease, box-shadow .18s ease, border-color .18s ease
-}
-.plan:hover{background:var(--hit)}
+.plan{display:grid;grid-template-columns:1fr 120px 120px;align-items:center;gap:10px;
+  border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0}
 .plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 30%, transparent)}
 .plan label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700}
-.plan input[type=radio]{accent-color:var(--accent)}
 .input-wrap{display:flex;flex-direction:column;gap:4px}
-.input-wrap small{opacity:.7;font-size:11px}
-.input-wrap input[type=number]{
-  width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 8px;text-align:right;font-weight:600;
-  transition:background .15s ease, box-shadow .15s ease, border-color .15s ease
-}
-.input-wrap input.active{background:var(--gold);color:var(--gold-ink);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset;border-color:color-mix(in oklab, var(--gold) 60%, var(--line))}
-
-/* Streaming-rader (radio + pris) */
+.input-wrap input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);
+  border-radius:8px;padding:6px 8px;text-align:right;font-weight:600}
+.input-wrap input.active{background:var(--gold);color:var(--gold-ink)}
 .svc{border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0}
 .svc header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.svc .row{display:flex;justify-content:space-between;align-items:center;border:1px dashed var(--line);border-radius:10px;padding:8px;margin:6px 0}
+.svc .row{display:flex;justify-content:space-between;align-items:center;border:1px dashed var(--line);
+  border-radius:10px;padding:8px;margin:6px 0}
 .svc label{display:flex;align-items:center;gap:8px;cursor:pointer}
 .price{font-weight:800}
-
-/* SUMMA */
-.total-card .row{display:flex;justify-content:space-between;align-items:baseline;margin:8px 0}
-.total-card .grand{font-size:22px;font-weight:900}
-.bump{animation:bump .35s ease}
-@keyframes bump{0%{transform:translateY(-1px)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
-.hr{border:0;border-top:1px dashed var(--line);margin:10px 0}
-.badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 </style>
 </head>
 <body>
@@ -96,395 +67,132 @@ details.widget>summary::-webkit-details-marker{display:none}
 </header>
 
 <main>
-  <!-- Vänster kolumn -->
-  <aside class="card aside-left">
-    <div>
-      <h3>Prisvalörer</h3>
-      <div class="denoms" id="denoms"></div>
-      <p style="margin:8px 0 0 0;color:var(--muted);font-size:12px">Tips: klicka ett pris för att fylla i <em>senast aktiva</em> fält (6 mån 1/2).</p>
+  <section id="calcSummary" class="card summary-top">
+    <h2>Samlad kalkyl</h2>
+    <div class="summary-grid">
+      <div class="box"><div>Första 6 mån</div><div id="s1" class="val">0 SEK</div></div>
+      <div class="box"><div>Andra 6 mån</div><div id="s2" class="val">0 SEK</div></div>
+      <div class="box"><div>Helår totalt</div><div id="year" class="val">0 SEK</div></div>
+      <div class="box"><div>Snitt / mån</div><div id="avg" class="val">0 SEK</div></div>
     </div>
-  </aside>
-
-  <!-- Center: widgets i grid + SUMMA nederst -->
-  <section class="layout" id="widgets">
-    <!-- widgets injiceras här -->
-    <aside class="card total-card summa" id="summaCard">
-      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap">
-        <h2 style="margin:0">Summa</h2>
-        <span class="badge">Snitt av 6 + 6 mån</span>
-      </div>
-      <hr class="hr">
-      <div class="row"><div>Snitt kundpris / mån</div><div id="kundTot" class="grand">0 SEK</div></div>
-      <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
-      <div class="row"><div>Första 6 månader (totalt)</div><div id="first6Tot">0 SEK</div></div>
-      <hr class="hr">
-      <div class="row"><div>Valda kategorier</div><div id="countSel">0</div></div>
-    </aside>
   </section>
+
+  <section class="layout" id="widgets"></section>
 </main>
 
 <script>
-/* ======= Prisvalörer ======= */
-const DENOMS = [299,339,389,439,489,499,599,689,699,749];
-
-/* ======= Huvudkategorier (manuella 6+6 fält) ======= */
-const GROUPS = [
-  { cat:"Bredband", plans:[
-    { id:"bb100",  label:"100/100 Mbit/s" },
-    { id:"bb300",  label:"300/300 Mbit/s" },
-    { id:"bb1000", label:"1000/1000 Mbit/s" },
-  ]},
-  { cat:"TV grundpaket", plans:[
-    { id:"mini",   label:"TV Mini" },
-    { id:"mellan", label:"TV Mellan" },
-    { id:"mycket", label:"TV Mycket" },
-  ]},
-  { cat:"Premium TV / Streaming", plans:[
-    { id:"mer",   label:"Streaming Mer" },
-    { id:"maxad", label:"Streaming Maxad" },
-    { id:"mest",  label:"Streaming Mest" },
-  ]},
+const GROUPS=[
+  {cat:"Bredband",plans:[
+    {id:"bb100",label:"100/100 Mbit/s"},
+    {id:"bb300",label:"300/300 Mbit/s"},
+    {id:"bb1000",label:"1000/1000 Mbit/s"}]},
+  {cat:"TV grundpaket",plans:[
+    {id:"mini",label:"TV Mini"},
+    {id:"mellan",label:"TV Mellan"},
+    {id:"mycket",label:"TV Mycket"}]},
+  {cat:"Premium TV / Streaming",plans:[
+    {id:"mer",label:"Streaming Mer"},
+    {id:"maxad",label:"Streaming Maxad"},
+    {id:"mest",label:"Streaming Mest"}]}
 ];
-
-/* ======= Streaming-tjänster (från ditt skript) ======= */
-const STREAM_SERVICES = [
-  {
-    id:'netflix', name:'Netflix', groups:[
-      { title:'Planer', ids:['basic','standard','premium'] }
-    ],
-    plans:[
-      { id:'basic',    label:'Basic',            priceSEK:109 },
-      { id:'standard', label:'Standard',         priceSEK:149 },
-      { id:'premium',  label:'Premium (4K)',     priceSEK:199 },
-    ]
-  },
-  {
-    id:'disney', name:'Disney+', groups:[
-      { title:'Planer', ids:['ads','standard','premium'] }
-    ],
-    plans:[
-      { id:'ads',      label:'Standard med reklam',       priceSEK:59  },
-      { id:'standard', label:'Standard (utan reklam)',    priceSEK:99  },
-      { id:'premium',  label:'Premium (4K, utan reklam)', priceSEK:139 },
-    ]
-  },
-  {
-    id:'max', name:'Max (HBO/Discovery)', groups:[
-      { title:'Underhållning', ids:['basicAds','standard','premium'] },
-      { title:'Sport',         ids:['sportBase','sportPremium','sportTotal'] }
-    ],
-    plans:[
-      { id:'basicAds',    label:'Basic med reklam',              priceSEK:89  },
-      { id:'standard',    label:'Standard (utan reklam, FHD)',   priceSEK:129 },
-      { id:'premium',     label:'Premium (4K, utan reklam)',     priceSEK:169 },
-      { id:'sportBase',   label:'Sport Bas (live-sport)',        priceSEK:260 },
-      { id:'sportPremium',label:'Sport Premium (mer live & HD)', priceSEK:360 },
-      { id:'sportTotal',  label:'Sport Total (störst utbud)',    priceSEK:460 },
-    ]
-  },
-  {
-    id:'prime', name:'Amazon Prime Video', groups:[
-      { title:'Planer', ids:['ads','adfree'] }
-    ],
-    plans:[
-      { id:'ads',    label:'Med reklam (ingår i Prime)',    priceSEK:59 },
-      { id:'adfree', label:'Utan reklam (Prime + tillägg)', priceSEK:88 },
-    ]
-  },
-  {
-    id:'tv4', name:'TV4 Play', groups:[
-      { title:'Planer', ids:['free','plus','plusNoAds','sportAds','sport','sportTotal'] }
-    ],
-    plans:[
-      { id:'free',      label:'Gratis (med reklam)',       priceSEK:0   },
-      { id:'plus',      label:'Plus (med reklam)',         priceSEK:69  },
-      { id:'plusNoAds', label:'Plus (utan reklam)',        priceSEK:169 },
-      { id:'sportAds',  label:'Sport (med reklam)',        priceSEK:349 },
-      { id:'sport',     label:'Sport (utan reklam)',       priceSEK:399 },
-      { id:'sportTotal',label:'Sport Total (utan reklam)', priceSEK:599 },
-    ]
-  },
-  {
-    id:'viaplay', name:'Viaplay', groups:[
-      { title:'Planer', ids:['films','medium','totalAds','total'] }
-    ],
-    plans:[
-      { id:'films',    label:'Film & Serier',  priceSEK:169 },
-      { id:'medium',   label:'Medium (sport)', priceSEK:399 },
-      { id:'totalAds', label:'Total (med reklam)', priceSEK:649 },
-      { id:'total',    label:'Total (utan reklam)', priceSEK:699 },
-    ]
-  },
+const STREAMS=[
+{id:'netflix',name:'Netflix',plans:[
+  {id:'basic',label:'Basic',priceSEK:109},
+  {id:'standard',label:'Standard',priceSEK:149},
+  {id:'premium',label:'Premium (4K)',priceSEK:199}]},
+{id:'disney',name:'Disney+',plans:[
+  {id:'ads',label:'Standard m. reklam',priceSEK:59},
+  {id:'standard',label:'Standard utan reklam',priceSEK:99},
+  {id:'premium',label:'Premium (4K utan reklam)',priceSEK:139}]},
+{id:'max',name:'Max (HBO/Discovery)',plans:[
+  {id:'basicAds',label:'Basic med reklam',priceSEK:89},
+  {id:'standard',label:'Standard utan reklam (FHD)',priceSEK:129},
+  {id:'premium',label:'Premium (4K utan reklam)',priceSEK:169},
+  {id:'sportBase',label:'Sport Bas',priceSEK:260},
+  {id:'sportPremium',label:'Sport Premium',priceSEK:360},
+  {id:'sportTotal',label:'Sport Total',priceSEK:460}]},
+{id:'prime',name:'Amazon Prime Video',plans:[
+  {id:'ads',label:'Med reklam',priceSEK:59},
+  {id:'adfree',label:'Utan reklam',priceSEK:88}]},
+{id:'tv4',name:'TV4 Play',plans:[
+  {id:'free',label:'Gratis (med reklam)',priceSEK:0},
+  {id:'plus',label:'Plus (med reklam)',priceSEK:69},
+  {id:'plusNoAds',label:'Plus utan reklam',priceSEK:169},
+  {id:'sportAds',label:'Sport med reklam',priceSEK:349},
+  {id:'sport',label:'Sport utan reklam',priceSEK:399},
+  {id:'sportTotal',label:'Sport Total',priceSEK:599}]},
+{id:'viaplay',name:'Viaplay',plans:[
+  {id:'films',label:'Film & Serier',priceSEK:169},
+  {id:'medium',label:'Medium (sport)',priceSEK:399},
+  {id:'totalAds',label:'Total m. reklam',priceSEK:649},
+  {id:'total',label:'Total utan reklam',priceSEK:699}]}
 ];
-
-/* ======= State & helpers ======= */
-const SKEY="btv_compass_v36";
-let state={
-  selections:{},        // huvudkategorier {cat: planId}
-  custom:{},            // {planId: {m6a, m6b}}
-  streaming:{},         // per tjänst: valt planId, ex { netflix:'standard', ... }
-  lastInputId:null      // senaste aktiva 6m-fältet
-};
-const fmt=v=>`${(v||0).toFixed(0)} SEK`;
-const $ =(s,r=document)=>r.querySelector(s);
-const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-function load(){ try{const raw=localStorage.getItem(SKEY);if(raw) state=JSON.parse(raw);}catch(e){} }
-function save(){ try{localStorage.setItem(SKEY,JSON.stringify(state));}catch(e){} }
-
-/* ======= Bygg prisvalörer ======= */
-function buildDenoms(){
-  const box=$('#denoms'); box.innerHTML='';
-  DENOMS.forEach(n=>{
-    const b=document.createElement('button');
-    b.className='dbtn'; b.textContent=n.toString();
-    b.title='Fyll i aktivt 6-mån-fält';
-    b.addEventListener('click',()=>pushDenom(n));
-    box.appendChild(b);
-  });
-}
-function pushDenom(val){
-  if(!state.lastInputId){
-    const first=$('.m6a')||$('.m6b'); if(!first) return;
-    state.lastInputId=getInputId(first);
-  }
-  const [pid,which]=state.lastInputId.split(':');
-  const el=$(`.plan[data-plan="${pid}"] .${which}`);
-  if(!el) return;
-  el.value=String(val);
-  el.classList.add('active');
-
-  state.custom[pid]=state.custom[pid]||{};
-  state.custom[pid][which]=val;
-  save(); updateRowVisual(el.closest('.plan')); updateTotals(true);
-}
-
-/* ======= Widgets ======= */
-function planRowHTML(cat,plan){
-  const m6a=state.custom[plan.id]?.m6a ?? '';
-  const m6b=state.custom[plan.id]?.m6b ?? '';
-  const cid=`${cat}__${plan.id}`.replace(/\s+/g,'_');
-  return `
-    <div class="plan" data-plan="${plan.id}" data-cat="${cat}">
-      <label>
-        <input type="radio" name="${cat}" id="${cid}" value="${plan.id}" ${state.selections[cat]===plan.id?'checked':''}>
-        ${plan.label}
-      </label>
-      <div class="input-wrap">
-        <input type="number" class="m6a" value="${m6a}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
-        <small>6 mån (1)</small>
-      </div>
-      <div class="input-wrap">
-        <input type="number" class="m6b" value="${m6b}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
-        <small>6 mån (2)</small>
-      </div>
-    </div>`;
-}
-
-function buildGroupWidgets(container){
+let state={sel:{},custom:{},streams:{}}; const fmt=v=>`${(v||0).toFixed(0)} SEK`;
+function $(s,r=document){return r.querySelector(s);} function $$(s,r=document){return[...r.querySelectorAll(s)];}
+function build(){const w=$('#widgets');w.innerHTML='';
   GROUPS.forEach(g=>{
-    const det=document.createElement('details'); det.className='widget'; det.open=true;
-    det.innerHTML=`
-      <summary><span>${g.cat}</span><span style="opacity:.7;font-size:12px">Välj ett alternativ</span></summary>
-      <div class="widget-body">
-        ${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}
-      </div>`;
-    container.appendChild(det);
+    const det=document.createElement('details');det.className='widget';det.open=true;
+    det.innerHTML=`<summary>${g.cat}</summary><div class="widget-body">${
+      g.plans.map(p=>`<div class="plan" data-cat="${g.cat}" data-id="${p.id}">
+        <label><input type="radio" name="${g.cat}" value="${p.id}">${p.label}</label>
+        <div class="input-wrap"><input type="number" class="m6a" placeholder="0"><small>6 mån (1)</small></div>
+        <div class="input-wrap"><input type="number" class="m6b" placeholder="0"><small>6 mån (2)</small></div>
+      </div>`).join('')}</div>`;w.appendChild(det);
   });
-
-  // radio events
-  $$('input[type=radio]').forEach(r=>{
-    r.addEventListener('change',()=>{
-      const row=r.closest('.plan');
-      state.selections[row.dataset.cat]=r.value;
-      save(); updateRowVisual(row); updateTotals(true);
-    });
-  });
-
-  // inputs
-  $$('.m6a,.m6b').forEach(inp=>{
-    const setActive=()=>{ state.lastInputId=getInputId(inp); save(); };
-    inp.addEventListener('focus', setActive);
-    inp.addEventListener('click', setActive);
-    inp.addEventListener('input',()=>{
-      const row=inp.closest('.plan'); const pid=row.dataset.plan; const n=parseFloat(inp.value);
-      state.custom[pid]=state.custom[pid]||{};
-      if(inp.classList.contains('m6a')) state.custom[pid].m6a=Number.isFinite(n)?n:null;
-      else state.custom[pid].m6b=Number.isFinite(n)?n:null;
-      inp.classList.toggle('active', inp.value!=='');
-      save(); updateRowVisual(row); updateTotals(true);
-    });
-    inp.classList.toggle('active', inp.value!=='');
-  });
-
-  $$('.plan').forEach(updateRowVisual);
-}
-
-function buildStreamingWidget(container){
-  const det=document.createElement('details'); det.className='widget'; det.open=true;
+  const det=document.createElement('details');det.className='widget';det.open=true;
   det.innerHTML=`<summary>Streamingkostnader – Sverige</summary>`;
-  const body=document.createElement('div'); body.className='widget-body';
-  det.appendChild(body);
-
-  STREAM_SERVICES.forEach(svc=>{
-    const card=document.createElement('div'); card.className='svc';
-    const sel=state.streaming[svc.id]||'';
-    card.innerHTML=`
-      <header><strong>${svc.name}</strong><small style="color:var(--muted)">Välj en plan</small></header>
-      ${svc.groups.map(gr=>{
-        const rows=gr.ids.map(pid=>{
-          const p=svc.plans.find(x=>x.id===pid);
-          const rid=`${svc.id}__${p.id}`;
-          return `
-            <div class="row">
-              <label>
-                <input type="radio" name="${svc.id}" id="${rid}" value="${p.id}" ${sel===p.id?'checked':''}>
-                ${p.label}
-              </label>
-              <div class="price">${fmt(p.priceSEK)}</div>
-            </div>`;
-        }).join('');
-        return rows;
-      }).join('')}
-    `;
-    body.appendChild(card);
-
-    // events per tjänst
-    $$(`input[type=radio][name="${svc.id}"]`, card).forEach(r=>{
-      r.addEventListener('change',()=>{
-        state.streaming[svc.id]=r.value;
-        save(); updateTotals(true);
-      });
-    });
+  const b=document.createElement('div');b.className='widget-body';
+  STREAMS.forEach(s=>{
+    const c=document.createElement('div');c.className='svc';c.innerHTML=
+      `<header><strong>${s.name}</strong></header>${
+        s.plans.map(p=>`<div class="row">
+           <label><input type="radio" name="${s.id}" value="${p.id}">${p.label}</label>
+           <div class="price">${fmt(p.priceSEK)}</div></div>`).join('')}`;
+    b.appendChild(c);
+  });det.appendChild(b);w.appendChild(det);
+  attachEvents();
+}
+function attachEvents(){
+  $$('input[type=radio]').forEach(r=>r.onchange=()=>{const cat=r.name;
+    if(STREAMS.find(s=>s.id===cat))state.streams[cat]=r.value;
+    else state.sel[cat]=r.value;
+    update();
   });
-
-  container.appendChild(det);
-}
-
-/* ======= Visuals & Totals ======= */
-function getInputId(inp){
-  const row=inp.closest('.plan'); if(!row) return null;
-  const pid=row.dataset.plan;
-  const which=inp.classList.contains('m6a')?'m6a':'m6b';
-  return `${pid}:${which}`;
-}
-function updateRowVisual(row){
-  if(!row) return;
-  const name=row.dataset.cat;
-  row.classList.toggle('selected', state.selections[name]===row.dataset.plan);
-}
-
-function calcStreamingMonthly(){
-  let sum=0;
-  STREAM_SERVICES.forEach(svc=>{
-    const pid=state.streaming[svc.id];
-    if(!pid) return;
-    const p=svc.plans.find(x=>x.id===pid);
-    if(p) sum+=p.priceSEK||0;
-  });
-  return sum;
-}
-
-function updateTotals(animate){
-  let monthly=0;     // snitt kundpris/mån (huvud + streaming)
-  let first6=0;      // första 6 månader totalt
-  let count=0;
-
-  // huvudkategorier
-  GROUPS.forEach(g=>{
-    const sel=state.selections[g.cat];
-    if(!sel) return;
-    const row=$(`.plan[data-cat="${g.cat}"][data-plan="${sel}"]`);
-    if(!row) return;
-    const a=parseFloat($('.m6a',row).value)||0;
-    const b=parseFloat($('.m6b',row).value)||0;
-    const avg=(a+b)/2;
-    monthly+=avg;
-    first6+=a*6;     // första 6 månader för denna kategori
-    count++;
-  });
-
-  // streaming
-  const streamMonthly=calcStreamingMonthly();
-  monthly+=streamMonthly;
-  first6+=streamMonthly*6;
-
-  const kundEl=$('#kundTot'), yearEl=$('#yearTot'), f6El=$('#first6Tot'), cntEl=$('#countSel');
-  kundEl.textContent=fmt(monthly);
-  yearEl.textContent=fmt(monthly*12);
-  f6El.textContent=fmt(first6);
-  cntEl.textContent=String(count + countStreaming());
-
-  if(animate){ [kundEl,yearEl,f6El,cntEl].forEach(el=>{ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }); }
-}
-
-function countStreaming(){
-  // antal valda streamingtjänster
-  return Object.values(state.streaming).filter(Boolean).length;
-}
-
-/* ======= Sök, Tema, Reset ======= */
-function attachSearch(){
-  const box=$('#search'), clr=$('#clearSearch');
-  box.addEventListener('input', ()=>{
-    const q=box.value.trim().toLowerCase();
-    // filtrera plans (huvud)
-    $$('.plan').forEach(row=>{
-      const show = !q || (row.textContent||'').toLowerCase().includes(q);
-      row.style.display=show?'grid':'none';
-      if(show){ row.closest('details')?.setAttribute('open',''); }
-    });
-    // filtrera streaming-rader
-    $$('.svc').forEach(card=>{
-      const show = !q || (card.textContent||'').toLowerCase().includes(q);
-      card.style.display=show?'block':'none';
-      if(show){ card.closest('details')?.setAttribute('open',''); }
-    });
-  });
-  clr.addEventListener('click',()=>{ box.value=''; box.dispatchEvent(new Event('input')); });
-}
-function attachTheme(){
-  const btn=$('#themeBtn');
-  btn.addEventListener('click',()=>{
-    const root=document.documentElement;
-    const dark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme', dark?'light':'dark');
-    btn.textContent=dark?'Mörkt läge':'Ljust läge';
+  $$('.m6a,.m6b').forEach(i=>{
+    i.oninput=()=>{const row=i.closest('.plan');const id=row.dataset.id;
+      const a=parseFloat($('.m6a',row).value)||0;const b=parseFloat($('.m6b',row).value)||0;
+      state.custom[id]={m6a:a,m6b:b};update();i.classList.toggle('active',i.value!=='');
+    };
   });
 }
-function attachReset(){
-  $('#resetBtn').addEventListener('click', ()=>{
-    state={selections:{},custom:{},streaming:{},lastInputId:null};
-    save();
-    init(); // bygg om
+function sumStream(){let s=0;STREAMS.forEach(sv=>{const pid=state.streams[sv.id];
+  const p=sv.plans.find(x=>x.id===pid);if(p)s+=p.priceSEK;});return s;}
+function update(){
+  let s1=0,s2=0;
+  GROUPS.forEach(g=>{const pid=state.sel[g.cat];if(!pid)return;
+    const r=$(`.plan[data-id="${pid}"]`);
+    const a=parseFloat($('.m6a',r).value)||0;const b=parseFloat($('.m6b',r).value)||0;
+    s1+=a*6;s2+=b*6;
   });
+  const st=sumStream()*6; s1+=st; s2+=st;
+  const year=s1+s2;const avg=year/12;
+  $('#s1').textContent=fmt(s1);$('#s2').textContent=fmt(s2);
+  $('#year').textContent=fmt(year);$('#avg').textContent=fmt(avg);
 }
-
-/* ======= Init ======= */
-function init(){
-  // vänster kolumn
-  buildDenoms();
-  // center widgets
-  const grid=$('#widgets');
-  grid.innerHTML='';
-
-  // 1) Huvud-kategorier
-  buildGroupWidgets(grid);
-
-  // 2) Streaming-katalog
-  buildStreamingWidget(grid);
-
-  // 3) SUMMA-kort finns redan i DOM, flytta det sist (säkerställ placering)
-  grid.appendChild($('#summaCard'));
-
-  // init totals
-  updateTotals(false);
-}
-
-load();
-init();
-attachSearch();
-attachTheme();
-attachReset();
+$('#search').oninput=e=>{
+  const q=e.target.value.toLowerCase();
+  $$('.plan,.svc').forEach(el=>{
+    el.style.display=!q||el.textContent.toLowerCase().includes(q)?'':'none';
+  });
+};
+$('#clearSearch').onclick=()=>{$('#search').value='';$('#search').dispatchEvent(new Event('input'));};
+$('#themeBtn').onclick=()=>{
+  const d=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',d?'light':'dark');
+  $('#themeBtn').textContent=d?'Mörkt läge':'Ljust läge';
+};
+$('#resetBtn').onclick=()=>{state={sel:{},custom:{},streams:{}};build();update();};
+build();update();
 </script>
 </body>
 </html>
