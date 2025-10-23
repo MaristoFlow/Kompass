@@ -29,28 +29,20 @@ h1{margin:0;font-size:18px;font-weight:800}
 .searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
 .searchbar input{all:unset;width:260px}
 
-main{max-width:1200px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
+main{max-width:1300px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
 
-/* Summary & selection */
 #selectionSummary{text-align:center;padding:16px}
-#selectionSummary h2{margin:0 0 10px 0;font-size:17px}
 .selection-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.selection-list .item{
-  background:var(--match);padding:6px 10px;border-radius:8px;
-  font-weight:600;border:1px solid var(--line);min-width:120px;text-align:center;
-}
+.selection-list .item{background:var(--match);padding:6px 10px;border-radius:8px;font-weight:600;border:1px solid var(--line);min-width:150px;text-align:center}
 
-/* Summary top */
 .summary-top{text-align:center;padding:18px 14px}
-.summary-top h2{margin:0 0 6px 0}
 .summary-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
 .summary-grid .box{min-width:180px;padding:8px 6px;line-height:1.3}
 .summary-grid .box div:first-child{font-size:13px;color:var(--muted)}
 .summary-grid .val{font-size:20px;font-weight:800;margin-top:2px}
-.bump{animation:bump .35s ease}@keyframes bump{0%{transform:translateY(-1px)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
+.bump{animation:bump .35s ease}@keyframes bump{0%,100%{transform:translateY(0)}50%{transform:translateY(1px)}}
 
-/* Layout */
 .layout{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
 details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
 details.widget>summary{
@@ -59,13 +51,9 @@ details.widget>summary{
 details.widget>summary::-webkit-details-marker{display:none}
 .widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
 
-/* Plan rows */
-.plan{
-  display:grid;grid-template-columns:auto 70px 70px 70px auto;
-  align-items:center;gap:8px;
+.plan{display:grid;grid-template-columns:auto 70px 70px 70px auto;align-items:center;gap:8px;
   border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;
-  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease
-}
+  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
 .plan:hover{background:color-mix(in oklab, var(--card) 80%, var(--match))}
 .plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 28%, transparent)}
 .plan .left{display:flex;align-items:center;gap:8px}
@@ -76,41 +64,23 @@ details.widget>summary::-webkit-details-marker{display:none}
 }
 .input-wrap{display:flex;flex-direction:column;gap:2px}
 .input-wrap small{opacity:.7;font-size:10px}
-.input-wrap input[type=number]{
-  width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);
-  border-radius:8px;padding:6px 6px;text-align:right;font-weight:600;
-  transition:background .12s ease,border-color .12s ease,box-shadow .12s ease
-}
-.input-wrap input.active{
-  background:var(--gold);color:var(--gold-ink);
-  box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset;
-  border-color:color-mix(in oklab, var(--gold) 60%, var(--line))
-}
+.input-wrap input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:6px;text-align:right;font-weight:600}
+.input-wrap input.active{background:var(--gold);color:var(--gold-ink)}
 
-/* Netflix toggle */
 .nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
-.nf-toggle input{accent-color:var(--accent);transform:scale(1.1)}
-.nf-icon{
-  font-size:12px;font-weight:800;color:var(--accent);
-  border:1px solid var(--line);border-radius:999px;
-  width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;
-}
-.nf-icon:hover::after{
-  content:"Netflix +100 kr/mån";position:absolute;transform:translateY(24px);
-  background:var(--card);color:var(--text);font-size:11px;
-  border:1px solid var(--line);padding:2px 6px;border-radius:6px;white-space:nowrap;
-  box-shadow:var(--shadow)
-}
-.badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-.match{background:var(--match)}
+.nf-icon{font-size:12px;font-weight:800;color:var(--accent);border:1px solid var(--line);border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+.nf-icon:hover::after{content:"Netflix +100 kr/mån";position:absolute;transform:translateY(24px);
+background:var(--card);color:var(--text);font-size:11px;border:1px solid var(--line);
+padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
 <header>
   <h1>Kompassen</h1>
   <div class="right">
-    <div class="searchbar" title="Sök på paket, kanaler eller sport: Mini, Mellan, Mycket, Premier League, SHL, TV4, Viaplay, Max …">
-      🔎 <input id="search" placeholder="Sök paket, kanaler eller sport …">
+    <div class="searchbar" title="Sök paket, kanaler eller sport: Premier League, SHL, Netflix, TV4, Viaplay …">
+      🔎 <input id="search" placeholder="Sök paket, kanal eller sport …">
       <button id="clearSearch" class="btn ghost">Rensa</button>
     </div>
     <button id="themeBtn" class="btn">Mörkt läge</button>
@@ -119,15 +89,11 @@ details.widget>summary::-webkit-details-marker{display:none}
 </header>
 
 <main>
-  <!-- Dina val -->
   <section id="selectionSummary" class="card">
     <h2>Dina valda paket</h2>
-    <div class="selection-list" id="selectedList">
-      <div class="item muted">Inga val ännu</div>
-    </div>
+    <div class="selection-list" id="selectedList"><div class="item muted">Inga val ännu</div></div>
   </section>
 
-  <!-- Summering -->
   <section id="calcSummary" class="card summary-top">
     <h2>Samlad kalkyl</h2>
     <div class="summary-grid">
@@ -143,26 +109,15 @@ details.widget>summary::-webkit-details-marker{display:none}
 
 <script>
 const GROUPS=[
-  {cat:"Bredband",plans:[
-    {id:"bb100",label:"Bredband 100/100 Mbit/s",tip:"Passar 1–2 personer",tags:"bredband 100"},
-    {id:"bb300",label:"Bredband 300/300 Mbit/s",tip:"För familjer med flera enheter",tags:"bredband 300 familj"},
-    {id:"bb1000",label:"Bredband 1000/1000 Mbit/s",tip:"Maxprestanda, spel & 4K/8K media",tags:"bredband 1000 spel"}
-  ]},
-  {cat:"TV grundpaket",plans:[
-    {id:"tvMini",label:"TV Mini",tip:"Basutbud ~19 kanaler + TV4 Play",tags:"tv mini tv4"},
-    {id:"tvMellan",label:"TV Mellan",tip:"~36 kanaler + BritBox, familjefavoriter",tags:"tv mellan britbox"},
-    {id:"tvMycket",label:"TV Mycket",tip:"~48 kanaler inkl. Viaplay + Max Basic",tags:"tv mycket viaplay max"}
-  ]},
-  {cat:"Premium",plans:[
-    {id:"mer",label:"MER",tip:"Netflix, Max Basic, Disney+",tags:"mer netflix disney",style:"text-align:center;font-weight:800"},
-    {id:"maxad",label:"MAXAD",tip:"Netflix + Disney+ + Prime + Max",tags:"maxad netflix prime",style:"text-align:center;font-weight:800"},
-    {id:"mest",label:"MEST",tip:"Störst mix inkl. Viaplay & TV4 Play",tags:"mest viaplay tv4",style:"text-align:center;font-weight:800"}
-  ]},
+  {cat:"Bredband",plans:[{id:"bb1",label:"Bredband 1"},{id:"bb2",label:"Bredband 2"},{id:"bb3",label:"Bredband 3"}]},
+  {cat:"TV-paket",plans:[{id:"mini",label:"Mini"},{id:"mellan",label:"Mellan"},{id:"mycket",label:"Mycket"}]},
+  {cat:"Premiumpaket",plans:[{id:"mer",label:"MER"},{id:"maxad",label:"MAXAD"},{id:"mest",label:"MEST"}]},
   {cat:"Sportpaket",plans:[
-    {id:"sportSmall",label:"Lilla Sport",tip:"Allsvenskan, LaLiga, ATP",tags:"sport lilla",sport:true},
-    {id:"sportLarge",label:"Stora Sport",tip:"Champions League, Premier League, F1",tags:"sport stora champions premier",sport:true},
-    {id:"sportLargest",label:"Största Sport",tip:"SHL, golf, F1, allt samlat",tags:"sport storsta shl golf",sport:true}
-  ]}
+    {id:"sportSmall",label:"Lilla Sport",sport:true},
+    {id:"sportLarge",label:"Stora Sport",sport:true},
+    {id:"sportLargest",label:"Största Sport",sport:true}]},
+  {cat:"Mobilabonnemang",plans:[{id:"mob1",label:"Mobil 1"},{id:"mob2",label:"Mobil 2"},{id:"mob3",label:"Mobil 3"}]},
+  {cat:"Övrigt",plans:[{id:"el",label:"El & hushåll"},{id:"ström",label:"Streaming"},{id:"annat",label:"Annat"}]}
 ];
 const NETFLIX_DELTA=100;
 let state={selections:{},prices:{},sportNF:{}};
@@ -173,23 +128,15 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 function planRowHTML(cat,plan){
   const pid=plan.id,m6a=state.prices[pid]?.m6a??'',m6b=state.prices[pid]?.m6b??'',m12=state.prices[pid]?.m12??'';
   const checked=state.selections[cat]===pid?'checked':'';
-  const nf=plan.sport?`
-  <label class="nf-toggle" title="Netflix +100 kr/mån">
-    <input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}>
-    <div class="nf-icon">N</div>
-  </label>`:`<span></span>`;
-  return `
-  <div class="plan" data-cat="${cat}" data-id="${pid}" data-tags="${(plan.tags||'').toLowerCase()}">
-    <div class="left" style="${plan.style||''}">
-      <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
-      <span class="info" title="${plan.tip||''}">i</span>
-    </div>
+  const nf=plan.sport?`<label class="nf-toggle" title="Netflix +100 kr/mån"><input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}><div class="nf-icon">N</div></label>`:`<span></span>`;
+  return `<div class="plan" data-cat="${cat}" data-id="${pid}">
+    <div class="left"><label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label></div>
     <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1)</small></div>
     <div class="input-wrap"><input type="number" class="m6b" value="${m6b}" placeholder="0"><small>6 mån (2)</small></div>
     <div class="input-wrap"><input type="number" class="m12" value="${m12}" placeholder="0"><small>12 mån</small></div>
     ${nf}
   </div>`;}
-  
+
 function buildUI(){
   const grid=$('#widgets');grid.innerHTML='';
   GROUPS.forEach(g=>{
@@ -202,37 +149,41 @@ function buildUI(){
 }
 
 function attachEvents(){
-  $$('input[type=radio]').forEach(r=>{
-    r.addEventListener('change',()=>{const row=r.closest('.plan');state.selections[row.dataset.cat]=r.value;updateTotals(true);});
+  $$('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{state.selections[r.closest('.plan').dataset.cat]=r.value;updateTotals(true);}));
+  $$('.m6a,.m6b,.m12').forEach(inp=>inp.addEventListener('input',()=>{
+    const row=inp.closest('.plan'),pid=row.dataset.id;
+    const a=+($('.m6a',row).value)||0,b=+($('.m6b',row).value)||0,c=+($('.m12',row).value)||0;
+    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null};updateTotals(true);
+  }));
+  $$('.nf').forEach(ch=>ch.addEventListener('change',()=>{state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals(true);}));
+  $('#search').addEventListener('input',e=>{
+    const q=e.target.value.trim().toLowerCase();
+    $$('.plan').forEach(r=>{const hay=(r.textContent||'').toLowerCase();r.style.display=!q||hay.includes(q)?'grid':'none';});
   });
-  $$('.m6a,.m6b,.m12').forEach(inp=>{
-    inp.addEventListener('input',()=>{const row=inp.closest('.plan'),pid=row.dataset.id;
-      const a=+($('.m6a',row).value)||0,b=+($('.m6b',row).value)||0,c=+($('.m12',row).value)||0;
-      state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null};updateTotals(true);});
-  });
-  $$('.nf').forEach(ch=>{ch.addEventListener('change',()=>{state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals(true);});});
-  const s=$('#search'),c=$('#clearSearch');
-  s.addEventListener('input',()=>{const q=s.value.trim().toLowerCase();
-    $$('.plan').forEach(r=>{const hay=(r.textContent||'').toLowerCase()+(r.dataset.tags||'');r.style.display=!q||hay.includes(q)?'grid':'none';});});
-  c.addEventListener('click',()=>{s.value='';s.dispatchEvent(new Event('input'));});
+  $('#clearSearch').addEventListener('click',()=>{$('#search').value='';$('#search').dispatchEvent(new Event('input'));});
   $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
-  $('#themeBtn').addEventListener('click',()=>{const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';});
+  $('#themeBtn').addEventListener('click',()=>{const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';});
+}
+
+function calcMonthly(p,a,b,c,nf){
+  if(c>0)return c+nf;
+  return ((a+nf)+(b+nf))/2||0;
 }
 
 function updateTotals(anim){
   let s6a=0,s6b=0;let selected=[];
   GROUPS.forEach(g=>{
     const pid=state.selections[g.cat];if(!pid)return;
-    const plan=g.plans.find(p=>p.id===pid);selected.push(plan.label);
+    const plan=g.plans.find(p=>p.id===pid);
     const p=state.prices[pid]||{};const a=+p.m6a||0,b=+p.m6b||0,c=+p.m12||0;
     let nf=0;if(g.cat==="Sportpaket"&&state.sportNF[pid])nf=NETFLIX_DELTA;
-    if(c>0){s6a+=(c+nf)*12;}else{s6a+=(a+nf)*6;s6b+=(b+nf)*6;}
+    const monthly=calcMonthly(p,a,b,c,nf);
+    selected.push(`${plan.label} – ${fmt(monthly)}`);
+    if(c>0)s6a+=(c+nf)*12;else{s6a+=(a+nf)*6;s6b+=(b+nf)*6;}
   });
   const year=s6a+s6b,avg=year/12;
-  $('#s1').textContent=fmt(s6a);$('#s2').textContent=fmt(s6b);
-  $('#year').textContent=fmt(year);$('#avg').textContent=fmt(avg);
-  const list=$('#selectedList');list.innerHTML=selected.length?selected.map(s=>`<div class="item">${s}</div>`).join(''):'<div class="item muted">Inga val ännu</div>';
+  $('#s1').textContent=fmt(s6a);$('#s2').textContent=fmt(s6b);$('#year').textContent=fmt(year);$('#avg').textContent=fmt(avg);
+  $('#selectedList').innerHTML=selected.length?selected.map(s=>`<div class="item">${s}</div>`).join(''):'<div class="item muted">Inga val ännu</div>';
 }
 buildUI();
 </script>
