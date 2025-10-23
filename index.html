@@ -1,193 +1,379 @@
-<!DOCTYPE html>
-<html lang="sv">
+<!doctype html>
+<html lang="sv" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Telia Bredband & TV Kalkylator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bredbands- & TV-kompassen</title>
   <style>
-    .highlight { background-color: #f3e7b3; transition: background-color 0.3s; }
-    .btn-option { 
-      border-radius: 0.75rem; 
-      border: 1px solid #ccc; 
-      padding: 0.5rem 0.75rem; 
-      background-color: white; 
-      cursor: pointer;
-      transition: all 0.2s;
+    :root{
+      --bg:#0f1115;--card:#141820;--muted:#9aa3b2;--text:#e9edf5;--accent:#7aa2ff;--line:#202736;
+      --chip:#242b3a;--glow-color: rgba(122,162,255,.28);--glow-bg: rgba(122,162,255,.08);
+      --tip:#11161f;--tip-border:#2a3344;
     }
-    .btn-option:hover { background-color: #f0f0ff; border-color: #7c3aed; }
-    .btn-active { background-color: #f3e7b3; border-color: #d4a017; font-weight: 600; }
+    html[data-theme="light"]{
+      --bg:#f6f7fb;--card:#ffffff;--muted:#5b6575;--text:#141820;--accent:#3b6aff;--line:#e4e7ef;
+      --chip:#eef2ff;--glow-color: rgba(59,106,255,.28);--glow-bg: rgba(59,106,255,.08);
+      --tip:#ffffff;--tip-border:#e2e6f0;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    header{padding:20px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    header h1{margin:0;font-size:18px;font-weight:700}
+    header .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .searchbar{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-width:260px}
+    .searchbar input{all:unset;color:var(--text);width:220px}
+    .theme-toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;cursor:pointer;font-weight:600}
+
+    main{max-width:1200px;margin:0 auto;padding:18px;display:grid;grid-template-columns: 1fr 360px;gap:18px}
+    @media (max-width: 980px){main{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+
+    .columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    @media (max-width:720px){.columns{grid-template-columns:1fr}}
+
+    .service{display:flex;flex-direction:column;gap:10px}
+    .service header{display:flex;justify-content:space-between;align-items:center;border:0;padding:0}
+    .service h2{font-size:15px;margin:0}
+    .muted{color:var(--muted)}
+    .plans{display:grid;gap:8px;margin-bottom:6px}
+
+    .plan{
+      position:relative;display:flex;align-items:center;justify-content:space-between;
+      border:1px solid var(--line);border-radius:12px;padding:10px;background:transparent;
+      transition: box-shadow .18s ease, border-color .18s ease, transform .06s ease, background .18s ease;
+    }
+    .plan:hover{transform: translateY(-1px)}
+    .plan label{display:flex;align-items:center;gap:10px;cursor:pointer}
+    .plan input{accent-color: var(--accent)}
+    .price{font-weight:700}
+    .chip{background:var(--chip);border:1px dashed var(--line);color:var(--muted);padding:2px 8px;border-radius:999px;font-size:11px}
+    .total-card .row{display:flex;justify-content:space-between;margin:8px 0}
+    .total-card .grand{font-size:22px;font-weight:800}
+    .kicker{font-size:12px}
+    .chips{display:flex;flex-wrap:wrap;gap:6px}
+    .btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;color:inherit;border:1px solid var(--line)}
+    .note{font-size:12px;color:var(--muted)}
+    .hr{border:0;border-top:1px dashed var(--line);margin:8px 0}
+
+    .selected{border-color: var(--accent);box-shadow: 0 0 0 2px var(--glow-color);background: var(--glow-bg)}
+
+    /* details/summary (bortfällbara widgets) */
+    details.widget{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    details.widget > summary{
+      list-style:none;padding:10px 12px;cursor:pointer;background:transparent;display:flex;align-items:center;justify-content:space-between;font-weight:700
+    }
+    details.widget > summary::-webkit-details-marker{display:none}
+    .caret{transition: transform .2s ease}
+    details[open] .caret{transform: rotate(90deg)}
+    .widget-body{padding:12px;border-top:1px dashed var(--line)}
+    .subhead{font-size:12px;color:var(--muted);margin:6px 0 8px}
+
+    /* Tooltips (hover-info) */
+    .tip-wrap{position:relative}
+    .tip{
+      position:absolute;z-index:20;left:12px;bottom:calc(100% + 10px);min-width:220px;max-width:340px;
+      background:var(--tip);border:1px solid var(--tip-border);border-radius:10px;padding:10px;color:var(--text);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);display:none
+    }
+    .tip:after{content:"";position:absolute;left:14px;top:100%;border:8px solid transparent;border-top-color:var(--tip-border)}
+    .plan:hover .tip{display:block}
+
+    /* Search highlights */
+    .hit{outline:2px solid var(--accent);outline-offset:2px}
   </style>
 </head>
+<body>
+  <header>
+    <h1>Bredbands- & TV-kompassen</h1>
 
-<body class="bg-slate-50 text-slate-900">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-6 text-center">Telia Bredband & TV Kostnadskalkylator</h1>
-
-    <div class="grid md:grid-cols-2 gap-8">
-      <!-- Vänster: Bredband -->
-      <div>
-        <h2 class="text-lg font-semibold mb-3 text-indigo-700">Bredband</h2>
-        <div id="broadbandPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
-
-        <h3 class="text-md font-semibold mb-2 text-indigo-700">Sportpaket</h3>
-        <div id="sportPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+    <div class="right">
+      <div class="searchbar" title="Sök t.ex. Netflix, Champions League, SHL, Disney, Premier League, F1">
+        🔎
+        <input id="ask" placeholder="Fråga mig: Netflix, Champions League, SHL ..." />
+        <button id="clearAsk" class="btn secondary" style="padding:6px 10px">Rensa</button>
       </div>
 
-      <!-- Höger: TV -->
-      <div>
-        <h2 class="text-lg font-semibold mb-3 text-indigo-700">TV & Streaming</h2>
-        <div id="tvPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6"></div>
-
-        <h3 class="text-md font-semibold mb-2 text-indigo-700">Filmpaket</h3>
-        <div id="filmPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
-      </div>
-    </div>
-
-    <!-- Kalkylkort -->
-    <div class="mt-10 bg-white rounded-2xl shadow p-6 max-w-2xl mx-auto space-y-4">
-      <h2 class="text-lg font-semibold text-center">Kalkylator</h2>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Hastighet</label>
-        <select id="speed" class="w-full border rounded-xl px-3 py-2">
-          <option>100/100</option>
-          <option>150/150</option>
-          <option>250/250</option>
-          <option>300/300</option>
-          <option>500/500</option>
-          <option>600/600</option>
-          <option>1000/1000</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Pris bredband/mån</label>
-        <input id="monthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 399" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">TV/mån</label>
-        <input id="tv" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 249" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Premium sport/film/mån</label>
-        <input id="premium" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 99" />
-      </div>
-
-      <div class="flex gap-2">
-        <button id="btn12" class="flex-1 border rounded-xl px-3 py-2">12 mån</button>
-        <button id="btn24" class="flex-1 border rounded-xl px-3 py-2">24 mån</button>
-      </div>
-
-      <label class="inline-flex items-center gap-2 text-sm">
-        <input id="includeVAT" type="checkbox" class="h-4 w-4 accent-indigo-600" checked />
-        Visa inkl. moms (25%)
+      <label class="theme-toggle">
+        <span id="themeLabel">Mörkt läge</span>
+        <input id="themeSwitch" type="checkbox" aria-label="Växla tema"
+               style="appearance:none;width:34px;height:18px;background:var(--line);border-radius:999px;position:relative;outline:none;cursor:pointer">
       </label>
 
-      <div id="result" class="rounded-xl bg-slate-100 p-4 text-sm mt-2">
-        <div class="opacity-70">Klicka på paket till vänster/höger för att börja räkna.</div>
-      </div>
+      <button id="resetBtn" class="btn secondary">Återställ val</button>
     </div>
-  </div>
+  </header>
 
-  <script>
-    const VAT = 0.25;
-    let contractMonths = 12;
+  <main>
+    <!-- Vänster: Bredband + Sport -->
+    <section class="card">
+      <div class="columns">
+        <div id="leftCol"></div>
+        <div id="rightCol"></div>
+      </div>
+    </section>
 
-    const el = id => document.getElementById(id);
+    <!-- Summering -->
+    <aside class="card total-card">
+      <h2 style="margin-top:0">Summering</h2>
+      <div class="chips" id="selectedChips"></div>
 
-    const broadbandPrices = [
-      { name:"150 Mbit/s", price:349 },
-      { name:"300 Mbit/s", price:389 },
-      { name:"500 Mbit/s", price:439 },
-      { name:"600 Mbit/s", price:489 },
-      { name:"1000 Mbit/s", price:599 },
-    ];
-    const tvPrices = [
-      { name:"TV Mini", price:249 },
-      { name:"TV Mellan", price:399 },
-      { name:"TV Max", price:499 },
-      { name:"TV Mycket", price:549 },
-      { name:"Streaming Mer", price:399 },
-      { name:"Streaming Maxad", price:499 },
-    ];
-    const sportPrices = [
-      { name:"Sport Bas", price:199 },
-      { name:"Sport Stor", price:299 },
-      { name:"C More Sport", price:399 },
-    ];
-    const filmPrices = [
-      { name:"Film Bas", price:149 },
-      { name:"Film Stor", price:249 },
-      { name:"HBO Max", price:149 },
-    ];
+      <div class="row"><div>Summa per månad</div><div id="monthly" class="grand" aria-live="polite">0 SEK</div></div>
+      <hr class="hr">
+      <div class="row"><div>Summa per år (12×)</div><div id="yearly" aria-live="polite">0 SEK</div></div>
+      <div class="row kicker"><div>Per vecka</div><div id="perWeek" aria-live="polite">0 SEK</div></div>
+      <hr class="hr">
+      <div class="row"><div>Valda paket</div><div id="count" aria-live="polite">0</div></div>
+      <p class="note">Tips: kopiera summeringen och klistra in i mejl eller offert.</p>
+      <button id="copyBtn" class="btn" style="width:100%">Kopiera summering</button>
+    </aside>
+  </main>
 
-    function createButtons(id, arr, targetInput){
-      const div = el(id);
-      arr.forEach(p=>{
-        const btn=document.createElement("button");
-        btn.className="btn-option";
-        btn.innerHTML=`${p.name}<br><span class='text-sm text-indigo-600 font-semibold'>${p.price} kr</span>`;
-        btn.onclick=()=>{
-          targetInput.value=p.price;
-          highlightInput(targetInput);
-          document.querySelectorAll(`#${id} .btn-option`).forEach(b=>b.classList.remove("btn-active"));
-          btn.classList.add("btn-active");
-          update();
-        };
-        div.appendChild(btn);
-      });
+<script>
+/* ====== DATA (Telia 2025 – sammanställt) ======
+   En (1) vald plan per kategori (service.id). Kategorier kan kombineras. */
+const CONFIG = {
+  currency: 'SEK',
+  leftOrder:  ['broadband','sport'],
+  rightOrder: ['tvgrund','premiumtv'],
+  services: [
+    { id:'broadband', name:'Bredband', type:'widget', summary:'Välj hastighet',
+      plans: [
+        { id:'bb100',  label:'100/100 Mbit/s',  priceSEK:599, info:'Fast bredband via fiber 100/100', tags:'bredband fiber 100' },
+        { id:'bb150',  label:'150/150 Mbit/s',  priceSEK:349, info:'Fast bredband via fiber 150/150', tags:'bredband fiber 150' },
+        { id:'bb300',  label:'300/300 Mbit/s',  priceSEK:389, info:'Fast bredband via fiber 300/300', tags:'bredband fiber 300' },
+        { id:'bb500',  label:'500/500 Mbit/s',  priceSEK:439, info:'Fast bredband via fiber 500/500', tags:'bredband fiber 500' },
+        { id:'bb600',  label:'600/600 Mbit/s',  priceSEK:489, info:'Fast bredband via fiber 600/600', tags:'bredband fiber 600' },
+        { id:'bb1000', label:'1000/1000 Mbit/s',priceSEK:599, info:'Fast bredband via fiber 1000/1000',tags:'bredband fiber 1000 gigabit' },
+      ]
+    },
+
+    /* Bortfällbar: TV grund (Mini, Mellan, Mycket) */
+    { id:'tvgrund', name:'TV grundpaket', type:'widget', summary:'Mini, Mellan, Mycket',
+      plans: [
+        { id:'tvMini',   label:'TV Mini',   priceSEK:149, info:'19 kanaler, TV4 Play Plus med reklam. Kampanj 6 mån. Ord 249 kr.', tags:'tv mini tv4 play kanaler' },
+        { id:'tvMellan', label:'TV Mellan', priceSEK:249, info:'36 kanaler, Britbox + TV4 Play Plus. Kampanj 6 mån. Ord 399 kr.', tags:'tv mellan tv4 britbox kanaler' },
+        { id:'tvMycket', label:'TV Mycket', priceSEK:499, info:'48 kanaler, Viaplay Medium + HBO Max Basic + Britbox.', tags:'tv mycket viaplay hbo kanaler' },
+      ]
+    },
+
+    /* Bortfällbar: Premium TV / Streaming (Mer, Maxad, Mest) */
+    { id:'premiumtv', name:'Premium TV / Streaming', type:'widget', summary:'Mer, Maxad, Mest',
+      plans: [
+        { id:'strMer',   label:'Streaming Mer',   priceSEK:199, info:'Netflix Standard + HBO Max Basic + Disney+ (ads). Ord 249 kr.', tags:'netflix hbo disney mer streaming' },
+        { id:'strMaxad', label:'Streaming Maxad', priceSEK:299, info:'Netflix Standard + HBO Max + Disney+ + Amazon Prime.', tags:'netflix hbo disney prime maxad' },
+        { id:'strMest',  label:'Streaming Mest',  priceSEK:499, info:'Netflix + HBO Max + Disney+ + Prime + TV4 Play Plus + Viaplay Film & Serier.', tags:'netflix hbo disney prime tv4 viaplay mest' },
+      ]
+    },
+
+    /* Sport – valbar separat kategori */
+    { id:'sport', name:'Sportpaket', type:'widget', summary:'Lilla, Stora, Största',
+      plans: [
+        { id:'sportLilla',  label:'Lilla sportpaketet',  priceSEK:249, info:'TV4 Play Sport Fotboll + HBO Max + Disney+ + Prime. Kampanj 3 mån (ord 449).', tags:'allsvenskan superettan uefa europa conference europa league serie a laliga fotboll' },
+        { id:'sportStora',  label:'Stora sportpaketet',  priceSEK:699, info:'TV4 Play Sport Fotboll + HBO Max + Disney+ + Prime + Viaplay Sport. 12 mån bind.', tags:'champions league premier league nhl f1 fotboll hockey motorsport' },
+        { id:'sportStorsta',label:'Största sportpaketet',priceSEK:999, info:'All sport: SHL, PL, F1, CL, golf m.m. Ingen bindning.', tags:'shl hockey premier league f1 champions league golf' },
+      ]
     }
+  ]
+};
 
-    createButtons("broadbandPrices", broadbandPrices, el("monthly"));
-    createButtons("tvPrices", tvPrices, el("tv"));
-    createButtons("sportPrices", sportPrices, el("premium"));
-    createButtons("filmPrices", filmPrices, el("premium"));
+let selectedPlans = {}; // { serviceId: planId }
 
-    el("btn12").onclick=()=>{ contractMonths=12; highlightButtons(); update(); };
-    el("btn24").onclick=()=>{ contractMonths=24; highlightButtons(); update(); };
-    function highlightButtons(){
-      el("btn12").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===12?"border-indigo-500 bg-indigo-50":"");
-      el("btn24").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===24?"border-indigo-500 bg-indigo-50":"");
+/* ===== Utils ===== */
+const fmt = (value) => `${value.toFixed(0)} SEK`;
+const $  = (sel, root=document)=>root.querySelector(sel);
+const $$ = (sel, root=document)=>[...root.querySelectorAll(sel)];
+
+/* ===== UI Builders ===== */
+function planRowHTML(serviceId, plan){
+  const radioId = `${serviceId}-${plan.id}`;
+  return `
+    <div class="plan tip-wrap" data-tags="${(plan.tags||'').toLowerCase()}">
+      <label for="${radioId}">
+        <input type="radio" name="${serviceId}" id="${radioId}" value="${plan.id}">
+        <div>${plan.label}</div>
+      </label>
+      <div class="price">${fmt(plan.priceSEK)}</div>
+      <div class="tip">
+        <strong>${plan.label}</strong><br>${plan.info||''}
+      </div>
+    </div>`;
+}
+
+function renderWidget(service){
+  const el = document.createElement('details');
+  el.className = 'widget';
+  el.open = true; // öppna som standard
+  el.innerHTML = `
+    <summary>
+      <span>${service.name}</span>
+      <span class="muted">${service.summary||'Välj paket'}</span>
+      <span class="caret">▶</span>
+    </summary>
+    <div class="widget-body">
+      <div class="plans">${service.plans.map(p=>planRowHTML(service.id,p)).join('')}</div>
+      <div class="note">Valt: <span id="sel-${service.id}">Inget</span></div>
+    </div>
+  `;
+
+  // events
+  $$('input[type=radio][name="'+service.id+'"]', el).forEach(input=>{
+    input.addEventListener('change', ()=>{
+      selectedPlans[service.id] = input.value;
+      highlightSelected(service.id, input.id, el);
+      const plan = service.plans.find(p=>p.id===input.value);
+      el.querySelector('#sel-'+service.id).textContent = plan ? plan.label : 'Inget';
+      updateTotals();
+    });
+  });
+
+  return el;
+}
+
+function highlightSelected(serviceId, pickedRadioId, scope){
+  $$('.plan', scope).forEach(row => row.classList.remove('selected'));
+  const picked = scope.querySelector('#'+CSS.escape(pickedRadioId))?.closest('.plan');
+  if (picked) picked.classList.add('selected');
+}
+
+/* ===== Render layout ===== */
+function renderColumns(){
+  const leftWrap = document.getElementById('leftCol');
+  const rightWrap = document.getElementById('rightCol');
+  leftWrap.innerHTML = '';
+  rightWrap.innerHTML = '';
+
+  const byId = Object.fromEntries(CONFIG.services.map(s=>[s.id,s]));
+  CONFIG.leftOrder.forEach(id => leftWrap.appendChild(renderWidget(byId[id])));
+  CONFIG.rightOrder.forEach(id => rightWrap.appendChild(renderWidget(byId[id])));
+
+  updateTotals();
+}
+
+/* ===== Totals ===== */
+function updateTotals(){
+  let monthlySEK = 0;
+  const chipsWrap = document.getElementById('selectedChips');
+  chipsWrap.innerHTML = '';
+
+  Object.entries(selectedPlans).forEach(([sid,pid])=>{
+    const svc = CONFIG.services.find(s=>s.id===sid);
+    const plan = svc?.plans.find(p=>p.id===pid);
+    if(plan){
+      monthlySEK += plan.priceSEK||0;
+      const chip = document.createElement('span');
+      chip.className='chip';
+      chip.textContent = `${svc.name}: ${plan.label}`;
+      chipsWrap.appendChild(chip);
     }
-    highlightButtons();
+  });
 
-    ["monthly","tv","premium"].forEach(id=>el(id).addEventListener("input",()=>{highlightInput(el(id));update();}));
-    el("includeVAT").addEventListener("change",update);
-    el("speed").addEventListener("change",update);
+  document.getElementById('monthly').textContent = fmt(monthlySEK);
+  document.getElementById('yearly').textContent = fmt(monthlySEK*12);
+  document.getElementById('perWeek').textContent = fmt((monthlySEK*12/52));
+  document.getElementById('count').textContent = Object.keys(selectedPlans).length;
+}
 
-    function highlightInput(input){
-      if(input.value!=="") input.classList.add("highlight");
-      else input.classList.remove("highlight");
+/* ===== Copy & Reset ===== */
+function copySummary(){
+  let lines = [];
+  lines.push('Bredbands- & TV-kompassen – Summering'); lines.push('');
+  Object.entries(selectedPlans).forEach(([sid,pid])=>{
+    const svc = CONFIG.services.find(s=>s.id===sid);
+    const plan = svc?.plans.find(p=>p.id===pid);
+    if(plan) lines.push(`• ${svc.name} — ${plan.label}: ${fmt(plan.priceSEK)}/månad`);
+  });
+  lines.push(''); lines.push(`Totalt: ${document.getElementById('monthly').textContent}`);
+  navigator.clipboard.writeText(lines.join('\n')).then(()=>{
+    const btn = document.getElementById('copyBtn'); const old = btn.textContent;
+    btn.textContent = 'Kopierat!'; setTimeout(()=>btn.textContent = old, 1200);
+  });
+}
+function resetAll(){
+  selectedPlans = {};
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.plan.selected').forEach(el=>el.classList.remove('selected'));
+  CONFIG.services.forEach(s=>{
+    const el = document.getElementById('sel-'+s.id);
+    if(el) el.textContent = 'Inget';
+  });
+  updateTotals();
+}
+
+/* ===== Theme ===== */
+function initTheme(){
+  const saved = localStorage.getItem('compass-theme');
+  const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  const initial = saved || (prefersLight ? 'light' : 'dark');
+  document.documentElement.setAttribute('data-theme', initial);
+  const isLight = initial === 'light';
+  const sw = document.getElementById('themeSwitch');
+  sw.checked = isLight;
+  document.getElementById('themeLabel').textContent = isLight ? 'Ljust läge' : 'Mörkt läge';
+  sw.addEventListener('change', ()=>{
+    const theme = sw.checked ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.getElementById('themeLabel').textContent = sw.checked ? 'Ljust läge' : 'Mörkt läge';
+    localStorage.setItem('compass-theme', theme);
+  });
+}
+
+/* ===== “Fråga mig” (sök) =====
+   - Markerar träffar i relevanta paket
+   - Expandera widgets med träffar
+*/
+function askSearch(q){
+  // rensa gamla träffar
+  document.querySelectorAll('.hit').forEach(el=>el.classList.remove('hit'));
+  if(!q){ return; }
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+
+  // sök i data-tags + label
+  CONFIG.services.forEach(service=>{
+    let widgetEl = document.querySelector(`details.widget .widget-body`); // fallback, fix per service nedan
+  });
+
+  // Loopa widgets
+  CONFIG.services.forEach(service=>{
+    const scope = document.querySelector(`#${service.id}-scope`);
+  });
+
+  // Markera rader
+  const matches = [];
+  document.querySelectorAll('.plan.tip-wrap').forEach(row=>{
+    const txt = (row.dataset.tags || '') + ' ' + row.querySelector('label div')?.textContent.toLowerCase();
+    const ok = terms.every(t => txt.includes(t));
+    if(ok){
+      row.classList.add('hit');
+      matches.push(row);
+      // öppna widgeten
+      const details = row.closest('details.widget');
+      if(details) details.open = true;
     }
+  });
+}
 
-    function update(){
-      const monthly = +el("monthly").value || 0;
-      const tv = +el("tv").value || 0;
-      const premium = +el("premium").value || 0;
-      const includeVAT = el("includeVAT").checked;
-      const m = contractMonths;
+/* ===== Mount & Events ===== */
+renderColumns(); initTheme();
 
-      let sum = 0;
-      for(let i=1;i<=m;i++) sum += monthly + tv + premium;
-      if(includeVAT) sum *= (1+VAT);
+document.getElementById('copyBtn').addEventListener('click', copySummary);
+document.getElementById('resetBtn').addEventListener('click', resetAll);
 
-      const perMonth = sum/m;
-      const yearly = perMonth*12;
+const ask = document.getElementById('ask');
+const clearAsk = document.getElementById('clearAsk');
+ask.addEventListener('input', ()=> askSearch(ask.value));
+clearAsk.addEventListener('click', ()=>{ ask.value=''; askSearch(''); });
 
-      el("result").innerHTML = `
-        <div><b>${el("speed").value}</b> · ${m} mån · ${includeVAT?"inkl.":"exkl."} moms</div>
-        <div class="text-xl font-semibold mt-2">${formatSEK(perMonth)} <span class="text-sm">/ mån</span></div>
-        <div class="mt-1 opacity-80">Årskostnad: ${formatSEK(yearly)}</div>
-        <div class="opacity-80">Totalsumma ${m} mån: ${formatSEK(sum)}</div>
-      `;
-    }
-
-    function formatSEK(n){
-      return new Intl.NumberFormat("sv-SE",{style:"currency",currency:"SEK",maximumFractionDigits:0}).format(Math.round(n));
-    }
-  </script>
+/* Gör varje widget lätt adresserbar för sök (id på details runt widget-body) */
+(function tagWidgetsForSearch(){
+  CONFIG.services.forEach((s, idx)=>{
+    const all = document.querySelectorAll('details.widget');
+    // nth match: rely on render order (leftOrder then rightOrder), so map by sequence
+    // simpler: tag by heading text
+    const heads = Array.from(document.querySelectorAll('details.widget summary span:first-child'));
+    const found = heads.find(h => h.textContent.trim() === s.name)?.closest('details.widget');
+    if(found) found.id = s.id + '-scope';
+  });
+})();
+</script>
 </body>
 </html>
