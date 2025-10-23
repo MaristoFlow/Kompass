@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bredbands- & TV-kompassen 3.1</title>
+<title>Bredbands- & TV-kompassen 3.2</title>
 <style>
 :root{
  --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
@@ -14,13 +14,15 @@ header{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:w
 h1{margin:0;font-size:18px}
 .btn{border:1px solid var(--line);background:transparent;color:inherit;border-radius:10px;padding:6px 10px;cursor:pointer;font-weight:600}
 .btn.primary{background:var(--accent);color:#fff;border:none}
+.searchbar{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+.searchbar input{all:unset;width:200px}
 main{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 360px;gap:16px}
 @media(max-width:900px){main{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
 details.widget{border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
 details>summary{list-style:none;padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700}
 details>summary::-webkit-details-marker{display:none}
-.plan{display:grid;grid-template-columns:1fr 70px 70px 70px 80px;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin:6px 0}
+.plan{display:grid;grid-template-columns:1fr 70px 80px 80px 70px;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin:6px 0}
 .plan:hover{background:rgba(122,162,255,.06)}
 .plan input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 4px;text-align:right}
 .plan .disc{font-size:12px;color:var(--muted);text-align:right}
@@ -34,6 +36,10 @@ hr{border:0;border-top:1px dashed var(--line);margin:8px 0}
 <header>
  <h1>Bredbands- & TV-kompassen</h1>
  <div class="right">
+   <div class="searchbar">
+     🔎 <input id="search" placeholder="Sök paket eller tjänst...">
+     <button id="clr" class="btn">Rensa</button>
+   </div>
    <button id="themeBtn" class="btn">Tema</button>
    <button id="resetBtn" class="btn">Återställ</button>
  </div>
@@ -47,7 +53,7 @@ hr{border:0;border-top:1px dashed var(--line);margin:8px 0}
    <div class="row"><div>Ordinarie pris/mån</div><div id="ordTot">0 SEK</div></div>
    <div class="row"><div>Snitt kundpris/mån</div><div id="kundTot" class="grand">0 SEK</div></div>
    <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
-   <div class="row"><div>Total rabatt</div><div id="rabTot">0 SEK (0 %)</div></div>
+   <div class="row"><div>Total rabatt</div><div id="rabTot">0 SEK</div></div>
  </aside>
 </main>
 
@@ -67,31 +73,25 @@ const DATA=[
   {id:"mer",label:"Streaming Mer",price:199},
   {id:"maxad",label:"Streaming Maxad",price:299},
   {id:"mest",label:"Streaming Mest",price:499}
- ]},
- {cat:"Enskilda Streaming-tjänster",plans:[
-  {id:"netflix",label:"Netflix Standard",price:149},
-  {id:"disney",label:"Disney+ Standard",price:99},
-  {id:"max",label:"Max (HBO/Discovery)",price:129},
-  {id:"prime",label:"Amazon Prime Video",price:59},
-  {id:"tv4",label:"TV4 Play Plus utan reklam",price:169},
-  {id:"viaplay",label:"Viaplay Film & Serier",price:169}
  ]}
 ];
 const fmt=v=>`${v.toFixed(0)} SEK`;
 
 function build(){
- const wrap=document.getElementById('services');wrap.innerHTML='';
+ const wrap=document.getElementById('services');
+ wrap.innerHTML='';
  DATA.forEach(s=>{
-  const det=document.createElement('details');det.className='widget';det.open=true;
+  const det=document.createElement('details');
+  det.className='widget';det.open=true;
   det.innerHTML=`<summary>${s.cat}</summary>
   <div class="widget-body">
   ${s.plans.map(p=>`
    <div class="plan" data-price="${p.price}">
     <label><input type="radio" name="${s.cat}" value="${p.id}"> ${p.label}</label>
     <div>${fmt(p.price)}</div>
-    <input type="number" class="m6a" value="${p.price}" min="0" step="1">
-    <input type="number" class="m6b" value="${p.price}" min="0" step="1">
-    <div class="disc">0 %</div>
+    <div><input type="number" class="m6a" value="${p.price}" min="0" step="1"><small>6 mån (1)</small></div>
+    <div><input type="number" class="m6b" value="${p.price}" min="0" step="1"><small>6 mån (2)</small></div>
+    <div class="disc">0 SEK</div>
    </div>`).join('')}
   </div>`;
   wrap.appendChild(det);
@@ -110,18 +110,25 @@ function calc(){
   const k2=+row.querySelector('.m6b').value||0;
   const snitt=(k1+k2)/2;
   ord+=p;kund+=snitt;
-  const diff=p-snitt;const perc=diff/p*100;
-  row.querySelector('.disc').textContent=`-${diff.toFixed(0)} SEK (${perc.toFixed(0)} %)`;
+  const diff=p-snitt;
+  row.querySelector('.disc').textContent=`-${diff.toFixed(0)} SEK`;
  });
  const rab=ord-kund;
  document.getElementById('ordTot').textContent=fmt(ord);
  document.getElementById('kundTot').textContent=fmt(kund);
  document.getElementById('yearTot').textContent=fmt(kund*12);
- document.getElementById('rabTot').textContent=`-${fmt(rab)} (${((rab/ord)*100||0).toFixed(0)} %)`;
+ document.getElementById('rabTot').textContent=`-${fmt(rab)}`;
 }
 
 document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('input').forEach(i=>{if(i.type==='radio')i.checked=false;else i.value=i.defaultValue});calc();};
 document.getElementById('themeBtn').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';};
+document.getElementById('search').oninput=e=>{
+ const q=e.target.value.toLowerCase();
+ document.querySelectorAll('.plan').forEach(p=>{
+  p.style.display=p.textContent.toLowerCase().includes(q)?'grid':'none';
+ });
+};
+document.getElementById('clr').onclick=()=>{document.getElementById('search').value='';document.querySelectorAll('.plan').forEach(p=>p.style.display='grid');};
 build();calc();
 </script>
 </body>
