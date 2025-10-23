@@ -1,135 +1,374 @@
 <!doctype html>
-<html lang="sv" data-theme="dark">
+<html lang="sv" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bredbands- & TV-kompassen 3.2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bredbands- & TV-kompassen PRO 3.4</title>
 <style>
+/* ======================= THEME / TOKENS ======================= */
 :root{
- --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
+  --bg:#f6f7fb; --card:#ffffff; --line:#e0e4ef; --text:#111318; --muted:#5f6675;
+  --accent:#3b6aff; --gold:#d8b55f; --gold-ink:#1b1400; --rose:#ffeff0;
+  --hit:#e9f0ff; --shadow:0 6px 24px rgba(10,20,40,.08);
+  --sel-shadow:0 0 0 2px rgba(216,181,95,.35);
+  --rose-border:#ffd2d6;
 }
-html[data-theme=light]{--bg:#f6f7fb;--card:#fff;--line:#e0e4ef;--text:#10131a;--muted:#5b6575;--accent:#3b6aff}
+html[data-theme="dark"]{
+  --bg:#0f1115; --card:#141820; --line:#242b3a; --text:#e9edf5; --muted:#9aa3b2;
+  --accent:#7aa2ff; --gold:#caa24e; --gold-ink:#0d0b00; --rose:#2a1820;
+  --hit:#141b27; --rose-border:#5a3340; --shadow:0 8px 28px rgba(0,0,0,.35);
+  --sel-shadow:0 0 0 2px rgba(202,162,78,.35);
+}
+
+/* ======================= BASE / LAYOUT ======================= */
+*{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-header{padding:16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
-h1{margin:0;font-size:18px}
-.btn{border:1px solid var(--line);background:transparent;color:inherit;border-radius:10px;padding:6px 10px;cursor:pointer;font-weight:600}
-.btn.primary{background:var(--accent);color:#fff;border:none}
-.searchbar{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
-.searchbar input{all:unset;width:200px}
-main{max-width:1200px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 360px;gap:16px}
-@media(max-width:900px){main{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
-details.widget{border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
-details>summary{list-style:none;padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:700}
-details>summary::-webkit-details-marker{display:none}
-.plan{display:grid;grid-template-columns:1fr 70px 80px 80px 70px;align-items:center;gap:6px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin:6px 0}
-.plan:hover{background:rgba(122,162,255,.06)}
-.plan input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:6px;padding:3px 4px;text-align:right}
-.plan .disc{font-size:12px;color:var(--muted);text-align:right}
-.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(122,162,255,.25)}
-.total-card .row{display:flex;justify-content:space-between;margin:6px 0}
-.total-card .grand{font-size:20px;font-weight:700}
-hr{border:0;border-top:1px dashed var(--line);margin:8px 0}
+header{
+  position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px);
+  background:color-mix(in oklab, var(--bg) 88%, transparent);
+  border-bottom:1px solid var(--line); padding:12px 16px; display:flex; gap:12px; align-items:center; justify-content:space-between;
+}
+h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.1px}
+.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{
+  border:1px solid var(--line); background:var(--card); color:inherit; border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:700; box-shadow:var(--shadow);
+}
+.btn.ghost{background:transparent}
+.searchbar{
+  display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 12px; box-shadow:var(--shadow)
+}
+.searchbar input{all:unset; width:220px}
+
+main{max-width:1200px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1fr 360px;gap:18px}
+@media (max-width:980px){main{grid-template-columns:1fr}}
+
+.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow)}
+
+/* ======================= WIDGETS ======================= */
+details.widget{border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:12px}
+details.widget>summary{
+  list-style:none; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-weight:800
+}
+details.widget>summary::-webkit-details-marker{display:none}
+.widget-body{border-top:1px dashed var(--line); padding:10px}
+
+.plan{
+  display:grid; grid-template-columns: 1fr 90px 110px 110px 90px;
+  align-items:center; gap:8px; border:1px solid var(--line); border-radius:12px; padding:8px 10px; margin:8px 0;
+  transition: background .18s ease, border-color .18s ease, transform .06s ease, box-shadow .18s ease;
+  background:transparent;
+}
+.plan:hover{background:var(--hit)}
+.plan.selected{border-color:var(--gold); box-shadow:var(--sel-shadow)}
+.plan label{display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700}
+.plan input[type="radio"]{accent-color:var(--accent)}
+.price-ord{
+  font-weight:800; text-align:right; border-radius:8px; padding:4px 6px; transition: background .25s ease, color .25s ease, box-shadow .25s ease, border .25s ease;
+}
+.price-ord.before{ background:var(--rose); border:1px solid var(--rose-border) }
+
+.input-wrap{display:flex; flex-direction:column; gap:4px}
+.input-wrap small{opacity:.7; font-size:11px}
+.input-wrap input[type="number"]{
+  width:100%; background:var(--card); border:1px solid var(--line); color:var(--text);
+  border-radius:8px; padding:6px 8px; text-align:right; font-weight:600; transition: background .18s ease, box-shadow .18s ease, color .18s ease, border-color .18s ease;
+}
+.input-wrap input.active{ background:var(--gold); color:var(--gold-ink); box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset; border-color:color-mix(in oklab, var(--gold) 60%, var(--line)) }
+
+.disc{
+  justify-self:end; font-weight:800; padding:4px 8px; border-radius:999px; border:1px solid var(--line);
+  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.disc.gold{ background:var(--gold); color:var(--gold-ink); border-color:color-mix(in oklab, var(--gold) 60%, var(--line)) }
+.disc.flash{ animation: flash 600ms ease }
+@keyframes flash { 0%{transform:scale(.95)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
+
+/* ======================= SUMMARY ======================= */
+.total-card .row{display:flex; justify-content:space-between; align-items:baseline; margin:8px 0}
+.total-card .grand{font-size:22px; font-weight:900}
+.bump{ animation:bump .35s ease }
+@keyframes bump { 0%{transform:translateY(-1px)} 50%{transform:translateY(1px)} 100%{transform:translateY(0)} }
+
+/* Utility badges */
+.badge{font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
+.head-right{display:flex; gap:8px; align-items:center}
 </style>
 </head>
 <body>
-<header>
- <h1>Bredbands- & TV-kompassen</h1>
- <div class="right">
-   <div class="searchbar">
-     🔎 <input id="search" placeholder="Sök paket eller tjänst...">
-     <button id="clr" class="btn">Rensa</button>
-   </div>
-   <button id="themeBtn" class="btn">Tema</button>
-   <button id="resetBtn" class="btn">Återställ</button>
- </div>
-</header>
+  <header>
+    <h1>Bredbands- & TV-kompassen</h1>
+    <div class="right">
+      <div class="searchbar" title="Sök t.ex. Netflix, TV Mellan, 1000/1000">
+        🔎 <input id="search" placeholder="Sök paket eller tjänst..." />
+        <button id="clearSearch" class="btn ghost">Rensa</button>
+      </div>
+      <button id="themeBtn" class="btn">Mörkt läge</button>
+      <button id="resetBtn" class="btn ghost">Återställ</button>
+    </div>
+  </header>
 
-<main>
- <section id="services" class="card"></section>
+  <main>
+    <section id="services" class="card"></section>
 
- <aside class="card total-card">
-   <h2>Summering</h2><hr>
-   <div class="row"><div>Ordinarie pris/mån</div><div id="ordTot">0 SEK</div></div>
-   <div class="row"><div>Snitt kundpris/mån</div><div id="kundTot" class="grand">0 SEK</div></div>
-   <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
-   <div class="row"><div>Total rabatt</div><div id="rabTot">0 SEK</div></div>
- </aside>
-</main>
+    <aside class="card total-card">
+      <div class="head-right">
+        <h2 style="margin:0">Summering</h2>
+        <span class="badge">12 mån snitt på kundpris</span>
+      </div>
+      <hr>
+      <div class="row"><div>Ordinarie pris / mån</div><div id="ordTot">0 SEK</div></div>
+      <div class="row"><div>Snitt kundpris / mån</div><div id="kundTot" class="grand">0 SEK</div></div>
+      <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
+      <div class="row"><div>Total rabatt</div><div id="rabTot">0 SEK</div></div>
+    </aside>
+  </main>
 
 <script>
-const DATA=[
- {cat:"Bredband",plans:[
-  {id:"bb100",label:"100/100 Mbit/s",price:599},
-  {id:"bb300",label:"300/300 Mbit/s",price:389},
-  {id:"bb1000",label:"1000/1000 Mbit/s",price:599}
- ]},
- {cat:"TV grundpaket",plans:[
-  {id:"mini",label:"TV Mini",price:149},
-  {id:"mellan",label:"TV Mellan",price:249},
-  {id:"mycket",label:"TV Mycket",price:499}
- ]},
- {cat:"Premium TV / Streaming",plans:[
-  {id:"mer",label:"Streaming Mer",price:199},
-  {id:"maxad",label:"Streaming Maxad",price:299},
-  {id:"mest",label:"Streaming Mest",price:499}
- ]}
+/* ======================= DATA ======================= */
+/* Kategorier: en (1) vald rad per kategori, men kategorier kan kombineras */
+const DATA = [
+  { cat: "Bredband", plans: [
+    { id:"bb100",  label:"100/100 Mbit/s",  price:599, tags:"bredband fiber 100 100/100" },
+    { id:"bb300",  label:"300/300 Mbit/s",  price:389, tags:"bredband fiber 300 300/300" },
+    { id:"bb1000", label:"1000/1000 Mbit/s",price:599, tags:"bredband fiber 1000 1000/1000 gigabit" }
+  ]},
+  { cat: "TV grundpaket", plans: [
+    { id:"mini",   label:"TV Mini",   price:149, tags:"tv mini tv4 play plus 19 kanaler" },
+    { id:"mellan", label:"TV Mellan", price:249, tags:"tv mellan britbox tv4 play 36 kanaler" },
+    { id:"mycket", label:"TV Mycket", price:499, tags:"tv mycket viaplay hbo 48 kanaler" }
+  ]},
+  { cat: "Premium TV / Streaming", plans: [
+    { id:"mer",   label:"Streaming Mer",   price:199, tags:"netflix hbo disney mer" },
+    { id:"maxad", label:"Streaming Maxad", price:299, tags:"netflix hbo disney prime maxad" },
+    { id:"mest",  label:"Streaming Mest",  price:499, tags:"netflix hbo disney prime tv4 viaplay mest" }
+  ]}
 ];
-const fmt=v=>`${v.toFixed(0)} SEK`;
 
-function build(){
- const wrap=document.getElementById('services');
- wrap.innerHTML='';
- DATA.forEach(s=>{
-  const det=document.createElement('details');
-  det.className='widget';det.open=true;
-  det.innerHTML=`<summary>${s.cat}</summary>
-  <div class="widget-body">
-  ${s.plans.map(p=>`
-   <div class="plan" data-price="${p.price}">
-    <label><input type="radio" name="${s.cat}" value="${p.id}"> ${p.label}</label>
-    <div>${fmt(p.price)}</div>
-    <div><input type="number" class="m6a" value="${p.price}" min="0" step="1"><small>6 mån (1)</small></div>
-    <div><input type="number" class="m6b" value="${p.price}" min="0" step="1"><small>6 mån (2)</small></div>
-    <div class="disc">0 SEK</div>
-   </div>`).join('')}
-  </div>`;
-  wrap.appendChild(det);
- });
- document.querySelectorAll('.plan input[type=radio]').forEach(r=>r.addEventListener('change',calc));
- document.querySelectorAll('.m6a,.m6b').forEach(i=>i.addEventListener('input',calc));
-}
-
-function calc(){
- let ord=0,kund=0;
- document.querySelectorAll('.plan.selected').forEach(p=>p.classList.remove('selected'));
- document.querySelectorAll('input[type=radio]:checked').forEach(r=>{
-  const row=r.closest('.plan');row.classList.add('selected');
-  const p=+row.dataset.price;
-  const k1=+row.querySelector('.m6a').value||0;
-  const k2=+row.querySelector('.m6b').value||0;
-  const snitt=(k1+k2)/2;
-  ord+=p;kund+=snitt;
-  const diff=p-snitt;
-  row.querySelector('.disc').textContent=`-${diff.toFixed(0)} SEK`;
- });
- const rab=ord-kund;
- document.getElementById('ordTot').textContent=fmt(ord);
- document.getElementById('kundTot').textContent=fmt(kund);
- document.getElementById('yearTot').textContent=fmt(kund*12);
- document.getElementById('rabTot').textContent=`-${fmt(rab)}`;
-}
-
-document.getElementById('resetBtn').onclick=()=>{document.querySelectorAll('input').forEach(i=>{if(i.type==='radio')i.checked=false;else i.value=i.defaultValue});calc();};
-document.getElementById('themeBtn').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='light'?'dark':'light';};
-document.getElementById('search').oninput=e=>{
- const q=e.target.value.toLowerCase();
- document.querySelectorAll('.plan').forEach(p=>{
-  p.style.display=p.textContent.toLowerCase().includes(q)?'grid':'none';
- });
+/* ======================= STATE / STORAGE ======================= */
+const SKEY = "btv_compass_v34";
+let state = {
+  // selections: { "Bredband": planId, ... }
+  selections: {},
+  // custom prices: { planId: {m6a:number, m6b:number} }
+  custom: {}
 };
-document.getElementById('clr').onclick=()=>{document.getElementById('search').value='';document.querySelectorAll('.plan').forEach(p=>p.style.display='grid');};
-build();calc();
+function loadState(){
+  try{
+    const raw = localStorage.getItem(SKEY);
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){}
+}
+function saveState(){
+  try{
+    localStorage.setItem(SKEY, JSON.stringify(state));
+  }catch(e){}
+}
+
+/* ======================= HELPERS ======================= */
+const fmt = v => `${(v||0).toFixed(0)} SEK`;
+const $ = (sel, root=document)=>root.querySelector(sel);
+const $$= (sel, root=document)=>[...root.querySelectorAll(sel)];
+
+/* Tiny animation helper */
+function bump(el){
+  if(!el) return;
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+}
+function flash(el){
+  if(!el) return;
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
+/* ======================= RENDER ======================= */
+function planRowHTML(cat, plan){
+  const cid = `${cat}__${plan.id}`.replace(/\s+/g,'_');
+  const stored = state.custom[plan.id] || {};
+  const m6a = Number.isFinite(stored.m6a) ? stored.m6a : plan.price;
+  const m6b = Number.isFinite(stored.m6b) ? stored.m6b : plan.price;
+
+  return `
+    <div class="plan" data-plan="${plan.id}" data-cat="${cat}" data-price="${plan.price}">
+      <label title="${plan.tags || ''}">
+        <input type="radio" name="${cat}" id="${cid}" value="${plan.id}" ${state.selections[cat]===plan.id?'checked':''}>
+        ${plan.label}
+      </label>
+      <div class="price-ord">${fmt(plan.price)}</div>
+
+      <div class="input-wrap">
+        <input type="number" class="m6a" value="${m6a}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
+        <small>6 mån (1)</small>
+      </div>
+
+      <div class="input-wrap">
+        <input type="number" class="m6b" value="${m6b}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
+        <small>6 mån (2)</small>
+      </div>
+
+      <div class="disc">0 SEK</div>
+    </div>`;
+}
+
+function render(){
+  const wrap = $('#services'); wrap.innerHTML = '';
+  DATA.forEach(group=>{
+    const det = document.createElement('details'); det.className='widget'; det.open = true;
+    det.innerHTML = `
+      <summary>
+        <span>${group.cat}</span>
+        <span style="opacity:.7;font-size:12px">Välj ett alternativ</span>
+      </summary>
+      <div class="widget-body">
+        ${group.plans.map(p=>planRowHTML(group.cat, p)).join('')}
+      </div>
+    `;
+    wrap.appendChild(det);
+  });
+
+  // selection highlight and events
+  $$('input[type="radio"]').forEach(r=>{
+    r.addEventListener('change', (e)=>{
+      const row = r.closest('.plan');
+      state.selections[row.dataset.cat] = r.value;
+      saveState();
+      updateRowVisual(row);
+      updateTotals(true);
+    });
+  });
+
+  // inputs
+  $$('.m6a, .m6b').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      const row = inp.closest('.plan');
+      const pid = row.dataset.plan;
+      const v = parseFloat(inp.value)||0;
+      // persist
+      state.custom[pid] = state.custom[pid] || {};
+      if(inp.classList.contains('m6a')) state.custom[pid].m6a = v;
+      else state.custom[pid].m6b = v;
+      saveState();
+
+      // UI feedback
+      inp.classList.add('active');
+      updateRowVisual(row);
+      updateTotals(true);
+    });
+  });
+
+  // initial visuals
+  $$('.plan').forEach(updateRowVisual);
+  updateTotals(false);
+}
+
+/* ======================= VISUAL LOGIC PER ROW ======================= */
+function updateRowVisual(row){
+  if(!row) return;
+  const priceOrdEl = row.querySelector('.price-ord');
+  const discEl = row.querySelector('.disc');
+  const p = +row.dataset.price;
+  const m6a = +row.querySelector('.m6a').value || 0;
+  const m6b = +row.querySelector('.m6b').value || 0;
+  const avg = (m6a + m6b)/2;
+  const diff = p - avg;
+
+  // selection style
+  const name = row.dataset.cat;
+  const selectedId = state.selections[name];
+  row.classList.toggle('selected', selectedId === row.dataset.plan);
+
+  // before/after tint
+  priceOrdEl.classList.toggle('before', diff > 0); // rödaktig om rabatt
+  const a = row.querySelector('.m6a'), b = row.querySelector('.m6b');
+  [a,b].forEach(el=>{
+    const val = +el.value || 0;
+    // mark gold if edited OR if lower than ordinarie
+    const shouldGold = el.classList.contains('active') || val < p;
+    el.classList.toggle('active', shouldGold);
+  });
+
+  // discount label (SEK only)
+  discEl.textContent = diff>0 ? `-${diff.toFixed(0)} SEK` : '0 SEK';
+  discEl.classList.toggle('gold', diff>0);
+}
+
+/* ======================= TOTALS ======================= */
+function updateTotals(animate){
+  let ord=0, kund=0;
+
+  // clear previous selection highlights
+  $$('.plan').forEach(p=>p.classList.remove('__was'));
+
+  // each category: apply selected row
+  DATA.forEach(group=>{
+    const sel = state.selections[group.cat];
+    if(!sel) return;
+    const row = $(`.plan[data-cat="${group.cat}"][data-plan="${sel}"]`);
+    if(!row) return;
+    const p = +row.dataset.price;
+    const m6a = +row.querySelector('.m6a').value || 0;
+    const m6b = +row.querySelector('.m6b').value || 0;
+    const avg = (m6a+m6b)/2;
+    ord += p; kund += avg;
+  });
+
+  const rab = ord - kund;
+  const ordEl  = $('#ordTot');
+  const kundEl = $('#kundTot');
+  const yearEl = $('#yearTot');
+  const rabEl  = $('#rabTot');
+
+  ordEl.textContent  = fmt(ord);
+  kundEl.textContent = fmt(kund);
+  yearEl.textContent = fmt(kund*12);
+  rabEl.textContent  = `-${fmt(rab)}`;
+
+  if(animate){ [ordEl,kundEl,yearEl,rabEl].forEach(bump); }
+}
+
+/* ======================= SEARCH ======================= */
+function attachSearch(){
+  const box = $('#search');
+  const clear = $('#clearSearch');
+  box.addEventListener('input', ()=>{
+    const q = box.value.trim().toLowerCase();
+    $$('.plan').forEach(row=>{
+      const text = (row.textContent||'').toLowerCase();
+      const tags = (row.querySelector('label')?.title||'').toLowerCase();
+      const show = !q || text.includes(q) || tags.includes(q);
+      row.style.display = show ? 'grid' : 'none';
+      if(show){ row.closest('details')?.setAttribute('open',''); }
+    });
+  });
+  clear.addEventListener('click', ()=>{
+    box.value=''; box.dispatchEvent(new Event('input'));
+  });
+}
+
+/* ======================= THEME TOGGLE ======================= */
+function attachTheme(){
+  const btn = $('#themeBtn');
+  btn.addEventListener('click', ()=>{
+    const root = document.documentElement;
+    const dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    btn.textContent = dark ? 'Mörkt läge' : 'Ljust läge';
+  });
+}
+
+/* ======================= RESET ======================= */
+function attachReset(){
+  $('#resetBtn').addEventListener('click', ()=>{
+    state = { selections:{}, custom:{} };
+    saveState();
+    render();
+  });
+}
+
+/* ======================= INIT ======================= */
+loadState();
+render();
+attachSearch();
+attachTheme();
+attachReset();
 </script>
 </body>
 </html>
