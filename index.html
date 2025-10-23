@@ -3,73 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bredband Kalkylator</title>
+  <title>Bredband & TV Kalkylator</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .highlight { background-color: #d8c47b33; transition: background-color 0.3s; }
+  </style>
 </head>
 
 <body class="bg-slate-50 text-slate-900">
-  <div class="max-w-md mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Bredband Kostnadskalkylator</h1>
-
-    <div class="bg-white rounded-2xl shadow p-4 space-y-4">
+  <div class="max-w-5xl mx-auto p-6 grid md:grid-cols-3 gap-6">
+    
+    <!-- VÄNSTER: Klickbara prislistor -->
+    <div class="space-y-6">
       <div>
-        <label class="block text-sm font-medium mb-1">Hastighet</label>
-        <select id="speed" class="w-full border rounded-xl px-3 py-2">
-          <option>100/100</option>
-          <option>150/150</option>
-          <option>250/250</option>
-          <option>300/300</option>
-          <option>500/500</option>
-          <option>600/600</option>
-          <option>1000/1000</option>
-        </select>
+        <h2 class="text-lg font-semibold mb-2">Bredband</h2>
+        <div id="broadbandPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
       </div>
-
       <div>
-        <label class="block text-sm font-medium mb-1">Ordinarie pris/mån</label>
-        <input id="monthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 399" />
+        <h2 class="text-lg font-semibold mb-2">TV-paket</h2>
+        <div id="tvPrices" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
       </div>
+    </div>
 
-      <div>
-        <label class="block text-sm font-medium mb-1">TV/mån (om tillämpligt)</label>
-        <input id="tv" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 99" />
-      </div>
+    <!-- HÖGER: Kalkylkort -->
+    <div class="md:col-span-2">
+      <h1 class="text-2xl font-bold mb-4">Bredband & TV Kostnadskalkylator</h1>
+      <div class="bg-white rounded-2xl shadow p-4 space-y-4">
 
-      <div>
-        <label class="block text-sm font-medium mb-1">Start/installation (engångsavgift)</label>
-        <input id="setup" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 395" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Kampanjpris/mån (om någon)</label>
-        <input id="campaignMonthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 249" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Kampanjens längd (mån)</label>
-        <input id="campaignMonths" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 3" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Pris efter 6 månader (om skiljer sig)</label>
-        <input id="after6" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 449" />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Bindningstid</label>
-        <div class="flex gap-2">
-          <button id="btn12" class="flex-1 border rounded-xl px-3 py-2">12 mån</button>
-          <button id="btn24" class="flex-1 border rounded-xl px-3 py-2">24 mån</button>
+        <div>
+          <label class="block text-sm font-medium mb-1">Hastighet</label>
+          <select id="speed" class="w-full border rounded-xl px-3 py-2">
+            <option>100/100</option>
+            <option>150/150</option>
+            <option>250/250</option>
+            <option>300/300</option>
+            <option>500/500</option>
+            <option>600/600</option>
+            <option>1000/1000</option>
+          </select>
         </div>
-      </div>
 
-      <label class="inline-flex items-center gap-2 text-sm">
-        <input id="includeVAT" type="checkbox" class="h-4 w-4 accent-indigo-600" checked />
-        Visa inkl. moms (25%)
-      </label>
+        <div>
+          <label class="block text-sm font-medium mb-1">Bredband pris/mån</label>
+          <input id="monthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 399" />
+        </div>
 
-      <div id="result" class="rounded-xl bg-slate-100 p-4 text-sm mt-2">
-        <div class="opacity-70">Fyll i värden för att se kalkyl.</div>
+        <div>
+          <label class="block text-sm font-medium mb-1">TV pris/mån</label>
+          <input id="tv" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 249" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Premium-paket/mån (t.ex. sport, film)</label>
+          <input id="premium" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 99" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Kampanjpris/mån (om någon)</label>
+          <input id="campaignMonthly" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 249" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Kampanjens längd (mån)</label>
+          <input id="campaignMonths" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 3" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Pris efter 6 månader (om skiljer sig)</label>
+          <input id="after6" type="number" class="w-full border rounded-xl px-3 py-2" placeholder="t.ex. 449" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Bindningstid</label>
+          <div class="flex gap-2">
+            <button id="btn12" class="flex-1 border rounded-xl px-3 py-2">12 mån</button>
+            <button id="btn24" class="flex-1 border rounded-xl px-3 py-2">24 mån</button>
+          </div>
+        </div>
+
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="includeVAT" type="checkbox" class="h-4 w-4 accent-indigo-600" checked />
+          Visa inkl. moms (25%)
+        </label>
+
+        <div id="result" class="rounded-xl bg-slate-100 p-4 text-sm mt-2">
+          <div class="opacity-70">Fyll i värden eller klicka på priser till vänster.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -79,52 +98,78 @@
     let contractMonths = 12;
 
     const el = id => document.getElementById(id);
-    const inputs = ["monthly", "tv", "setup", "campaignMonthly", "campaignMonths", "after6"];
-    inputs.forEach(id => el(id).addEventListener("input", update));
-    el("includeVAT").addEventListener("change", update);
-    el("speed").addEventListener("change", update);
-    el("btn12").addEventListener("click", () => { contractMonths = 12; highlightButtons(); update(); });
-    el("btn24").addEventListener("click", () => { contractMonths = 24; highlightButtons(); update(); });
+    const broadbandPrices = [349,389,439,489,499,589,599,639,689,749];
+    const tvPrices = [499,399,249,149];
+    const inputs = ["monthly","tv","premium","campaignMonthly","campaignMonths","after6"];
 
-    function highlightButtons() {
-      el("btn12").className = "flex-1 border rounded-xl px-3 py-2 " + (contractMonths===12 ? "border-indigo-500 bg-indigo-50" : "");
-      el("btn24").className = "flex-1 border rounded-xl px-3 py-2 " + (contractMonths===24 ? "border-indigo-500 bg-indigo-50" : "");
+    // render price buttons
+    const bbDiv = el("broadbandPrices");
+    broadbandPrices.forEach(price=>{
+      const btn=document.createElement("button");
+      btn.textContent=price+" kr";
+      btn.className="border rounded-xl px-2 py-1 hover:bg-indigo-100";
+      btn.onclick=()=>{el('monthly').value=price; markActive(el('monthly')); update();};
+      bbDiv.appendChild(btn);
+    });
+    const tvDiv = el("tvPrices");
+    tvPrices.forEach(price=>{
+      const btn=document.createElement("button");
+      btn.textContent=price+" kr";
+      btn.className="border rounded-xl px-2 py-1 hover:bg-indigo-100";
+      btn.onclick=()=>{el('tv').value=price; markActive(el('tv')); update();};
+      tvDiv.appendChild(btn);
+    });
+
+    // highlight selected contract
+    function highlightButtons(){
+      el("btn12").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===12?"border-indigo-500 bg-indigo-50":"");
+      el("btn24").className="flex-1 border rounded-xl px-3 py-2 "+(contractMonths===24?"border-indigo-500 bg-indigo-50":"");
     }
+    el("btn12").onclick=()=>{contractMonths=12;highlightButtons();update();};
+    el("btn24").onclick=()=>{contractMonths=24;highlightButtons();update();};
     highlightButtons();
 
-    function update() {
+    // attach updates
+    inputs.forEach(id=>el(id).addEventListener("input",()=>{markActive(el(id));update();}));
+    el("includeVAT").addEventListener("change",update);
+    el("speed").addEventListener("change",update);
+
+    function markActive(input){
+      if(input.value!=="") input.classList.add("highlight");
+      else input.classList.remove("highlight");
+    }
+
+    function update(){
       const monthly = +el("monthly").value || 0;
       const tv = +el("tv").value || 0;
-      const setup = +el("setup").value || 0;
+      const premium = +el("premium").value || 0;
       const campaignMonthly = +el("campaignMonthly").value || monthly;
       const campaignMonths = +el("campaignMonths").value || 0;
       const after6 = +el("after6").value || monthly;
       const includeVAT = el("includeVAT").checked;
-
       const m = contractMonths;
-      let sum = 0;
-      for (let i=1; i<=m; i++) {
-        let price = monthly;
-        if (i <= campaignMonths) price = campaignMonthly;
-        else if (i <= 6) price = after6; // särskilt 6-mån pris
-        sum += price + tv;
-      }
-      sum += setup;
 
-      if (includeVAT) sum *= (1+VAT);
+      let sum = 0;
+      for(let i=1;i<=m;i++){
+        let price = monthly;
+        if(i <= campaignMonths) price = campaignMonthly;
+        else if(i <= 6) price = after6;
+        sum += price + tv + premium;
+      }
+      if(includeVAT) sum *= (1+VAT);
       const perMonth = sum/m;
       const yearly = perMonth*12;
 
       el("result").innerHTML = `
-        <div><b>${el("speed").value}</b> · ${contractMonths} mån · ${includeVAT ? "inkl." : "exkl."} moms</div>
+        <div><b>${el("speed").value}</b> · ${m} mån · ${includeVAT?"inkl.":"exkl."} moms</div>
         <div class="text-xl font-semibold mt-2">${formatSEK(perMonth)} <span class="text-sm">/ mån</span></div>
         <div class="mt-1 opacity-80">Årskostnad: ${formatSEK(yearly)}</div>
         <div class="opacity-80">Totalsumma ${m} mån: ${formatSEK(sum)}</div>
       `;
     }
 
-    function formatSEK(n) {
-      return new Intl.NumberFormat("sv-SE", { style:"currency", currency:"SEK", maximumFractionDigits:0 }).format(Math.round(n));
+    function formatSEK(n){
+      return new Intl.NumberFormat("sv-SE",{style:"currency",currency:"SEK",maximumFractionDigits:0}).format(Math.round(n));
     }
   </script>
 </body>
