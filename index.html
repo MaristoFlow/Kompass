@@ -2,231 +2,266 @@
 <html lang="sv" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Bredbands- & TV-kompassen PRO 3.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bredbands- & TV-kompassen Pro 3.5</title>
 <style>
-/* ======================= THEME / TOKENS ======================= */
 :root{
-  --bg:#f6f7fb; --card:#ffffff; --line:#e0e4ef; --text:#111318; --muted:#5f6675;
-  --accent:#3b6aff; --gold:#d8b55f; --gold-ink:#1b1400; --rose:#ffeff0;
-  --hit:#e9f0ff; --shadow:0 6px 24px rgba(10,20,40,.08);
-  --sel-shadow:0 0 0 2px rgba(216,181,95,.35);
-  --rose-border:#ffd2d6;
+  --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
+  --gold:#d8b55f;--gold-ink:#1b1400;--hit:#eef3ff;--shadow:0 6px 24px rgba(10,20,40,.08)
 }
-html[data-theme="dark"]{
-  --bg:#0f1115; --card:#141820; --line:#242b3a; --text:#e9edf5; --muted:#9aa3b2;
-  --accent:#7aa2ff; --gold:#caa24e; --gold-ink:#0d0b00; --rose:#2a1820;
-  --hit:#141b27; --rose-border:#5a3340; --shadow:0 8px 28px rgba(0,0,0,.35);
-  --sel-shadow:0 0 0 2px rgba(202,162,78,.35);
+html[data-theme=dark]{
+  --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
+  --gold:#caa24e;--gold-ink:#0d0b00;--hit:#141b27;--shadow:0 8px 28px rgba(0,0,0,.35)
 }
-
-/* ======================= BASE / LAYOUT ======================= */
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
 header{
-  position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(6px);
-  background:color-mix(in oklab, var(--bg) 88%, transparent);
-  border-bottom:1px solid var(--line); padding:12px 16px; display:flex; gap:12px; align-items:center; justify-content:space-between;
+  position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.1) blur(6px);
+  background:color-mix(in oklab, var(--bg) 90%, transparent);
+  border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between
 }
-h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.1px}
+h1{margin:0;font-size:18px;font-weight:800}
 .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{
-  border:1px solid var(--line); background:var(--card); color:inherit; border-radius:12px; padding:8px 12px; cursor:pointer; font-weight:700; box-shadow:var(--shadow);
-}
+.btn{border:1px solid var(--line);background:var(--card);color:inherit;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow)}
 .btn.ghost{background:transparent}
-.searchbar{
-  display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:8px 12px; box-shadow:var(--shadow)
+.searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
+.searchbar input{all:unset;width:220px}
+
+main{max-width:1300px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:260px 1fr 360px;gap:18px}
+@media (max-width:1080px){main{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+
+.aside-left{display:flex;flex-direction:column;gap:14px}
+
+/* Prisvalörer */
+.denoms{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.denoms h3{margin:0 0 8px 0;font-size:12px;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+.dbtn{
+  font-size:12px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:6px 8px;cursor:pointer;text-align:center
 }
-.searchbar input{all:unset; width:220px}
+.dbtn:hover{background:color-mix(in oklab, var(--gold) 18%, var(--card))}
 
-main{max-width:1200px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1fr 360px;gap:18px}
-@media (max-width:980px){main{grid-template-columns:1fr}}
+/* Streaming-widget mini */
+.stream-list{display:grid;gap:8px}
+.stream-row{display:flex;justify-content:space-between;align-items:center;border:1px dashed var(--line);border-radius:10px;padding:8px}
+.stream-row label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.stream-footer{display:flex;justify-content:space-between;margin-top:8px;align-items:center}
 
-.card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow)}
-
-/* ======================= WIDGETS ======================= */
-details.widget{border:1px solid var(--line); border-radius:14px; overflow:hidden; margin-bottom:12px}
-details.widget>summary{
-  list-style:none; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-weight:800
-}
+/* Widgets center */
+details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details.widget>summary{list-style:none;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800}
 details.widget>summary::-webkit-details-marker{display:none}
-.widget-body{border-top:1px dashed var(--line); padding:10px}
+.widget-body{border-top:1px dashed var(--line);padding:10px}
 
 .plan{
-  display:grid; grid-template-columns: 1fr 90px 110px 110px 90px;
-  align-items:center; gap:8px; border:1px solid var(--line); border-radius:12px; padding:8px 10px; margin:8px 0;
-  transition: background .18s ease, border-color .18s ease, transform .06s ease, box-shadow .18s ease;
-  background:transparent;
+  display:grid;grid-template-columns:1fr 120px 120px;align-items:center;gap:10px;
+  border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:8px 0;background:transparent;transition:background .18s ease, box-shadow .18s ease, border-color .18s ease
 }
 .plan:hover{background:var(--hit)}
-.plan.selected{border-color:var(--gold); box-shadow:var(--sel-shadow)}
-.plan label{display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700}
-.plan input[type="radio"]{accent-color:var(--accent)}
-.price-ord{
-  font-weight:800; text-align:right; border-radius:8px; padding:4px 6px; transition: background .25s ease, color .25s ease, box-shadow .25s ease, border .25s ease;
+.plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 30%, transparent)}
+.plan label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700}
+.plan input[type=radio]{accent-color:var(--accent)}
+.input-wrap{display:flex;flex-direction:column;gap:4px}
+.input-wrap small{opacity:.7;font-size:11px}
+.input-wrap input[type=number]{
+  width:100%;background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 8px;text-align:right;font-weight:600;
+  transition:background .15s ease, box-shadow .15s ease, border-color .15s ease
 }
-.price-ord.before{ background:var(--rose); border:1px solid var(--rose-border) }
+.input-wrap input.active{background:var(--gold);color:var(--gold-ink);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset;border-color:color-mix(in oklab, var(--gold) 60%, var(--line))}
 
-.input-wrap{display:flex; flex-direction:column; gap:4px}
-.input-wrap small{opacity:.7; font-size:11px}
-.input-wrap input[type="number"]{
-  width:100%; background:var(--card); border:1px solid var(--line); color:var(--text);
-  border-radius:8px; padding:6px 8px; text-align:right; font-weight:600; transition: background .18s ease, box-shadow .18s ease, color .18s ease, border-color .18s ease;
-}
-.input-wrap input.active{ background:var(--gold); color:var(--gold-ink); box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 40%, transparent) inset; border-color:color-mix(in oklab, var(--gold) 60%, var(--line)) }
-
-.disc{
-  justify-self:end; font-weight:800; padding:4px 8px; border-radius:999px; border:1px solid var(--line);
-  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
-}
-.disc.gold{ background:var(--gold); color:var(--gold-ink); border-color:color-mix(in oklab, var(--gold) 60%, var(--line)) }
-.disc.flash{ animation: flash 600ms ease }
-@keyframes flash { 0%{transform:scale(.95)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
-
-/* ======================= SUMMARY ======================= */
-.total-card .row{display:flex; justify-content:space-between; align-items:baseline; margin:8px 0}
-.total-card .grand{font-size:22px; font-weight:900}
-.bump{ animation:bump .35s ease }
-@keyframes bump { 0%{transform:translateY(-1px)} 50%{transform:translateY(1px)} 100%{transform:translateY(0)} }
-
-/* Utility badges */
-.badge{font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted)}
-.head-right{display:flex; gap:8px; align-items:center}
+/* Summary */
+.total-card .row{display:flex;justify-content:space-between;align-items:baseline;margin:8px 0}
+.total-card .grand{font-size:22px;font-weight:900}
+.bump{animation:bump .35s ease}
+@keyframes bump{0%{transform:translateY(-1px)}50%{transform:translateY(1px)}100%{transform:translateY(0)}}
+.hr{border:0;border-top:1px dashed var(--line);margin:10px 0}
+.badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 </style>
 </head>
 <body>
-  <header>
-    <h1>Bredbands- & TV-kompassen</h1>
-    <div class="right">
-      <div class="searchbar" title="Sök t.ex. Netflix, TV Mellan, 1000/1000">
-        🔎 <input id="search" placeholder="Sök paket eller tjänst..." />
-        <button id="clearSearch" class="btn ghost">Rensa</button>
-      </div>
-      <button id="themeBtn" class="btn">Mörkt läge</button>
-      <button id="resetBtn" class="btn ghost">Återställ</button>
+<header>
+  <h1>Bredbands- & TV-kompassen</h1>
+  <div class="right">
+    <div class="searchbar">
+      🔎 <input id="search" placeholder="Sök paket eller tjänst...">
+      <button id="clearSearch" class="btn ghost">Rensa</button>
     </div>
-  </header>
+    <button id="themeBtn" class="btn">Mörkt läge</button>
+    <button id="resetBtn" class="btn ghost">Återställ</button>
+  </div>
+</header>
 
-  <main>
-    <section id="services" class="card"></section>
+<main>
+  <!-- Vänster kolumn -->
+  <aside class="card aside-left" id="leftCol">
+    <div>
+      <h3>Prisvalörer</h3>
+      <div class="denoms" id="denoms"></div>
+      <p style="margin:8px 0 0 0;color:var(--muted);font-size:12px">Tips: klicka ett pris för att fylla i <em>senast aktiva</em> fält.</p>
+    </div>
 
-    <aside class="card total-card">
-      <div class="head-right">
-        <h2 style="margin:0">Summering</h2>
-        <span class="badge">12 mån snitt på kundpris</span>
-      </div>
-      <hr>
-      <div class="row"><div>Ordinarie pris / mån</div><div id="ordTot">0 SEK</div></div>
-      <div class="row"><div>Snitt kundpris / mån</div><div id="kundTot" class="grand">0 SEK</div></div>
-      <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
-      <div class="row"><div>Total rabatt</div><div id="rabTot">0 SEK</div></div>
-    </aside>
-  </main>
+    <div class="card" style="padding:12px">
+      <details open>
+        <summary style="font-weight:800;cursor:pointer">Streamingkostnader – Sverige</summary>
+        <div class="stream-list" id="streamList" style="margin-top:8px"></div>
+        <div class="stream-footer">
+          <label style="display:flex;gap:8px;align-items:center;cursor:pointer">
+            <input type="checkbox" id="includeStreaming"> Inkludera i totalsumman
+          </label>
+          <div><strong>Summa:</strong> <span id="streamSum">0 SEK</span></div>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- Mitten (huvudkalkylatorn) -->
+  <section id="services" class="card"></section>
+
+  <!-- Höger: summering -->
+  <aside class="card total-card">
+    <div style="display:flex;gap:8px;align-items:center">
+      <h2 style="margin:0">Summering</h2>
+      <span class="badge">Snitt av 6+6 mån</span>
+    </div>
+    <hr class="hr">
+    <div class="row"><div>Snitt kundpris / mån</div><div id="kundTot" class="grand">0 SEK</div></div>
+    <div class="row"><div>Årligt pris</div><div id="yearTot">0 SEK</div></div>
+    <hr class="hr">
+    <div class="row"><div>Valda kategorier</div><div id="countSel">0</div></div>
+  </aside>
+</main>
 
 <script>
-/* ======================= DATA ======================= */
-/* Kategorier: en (1) vald rad per kategori, men kategorier kan kombineras */
-const DATA = [
-  { cat: "Bredband", plans: [
-    { id:"bb100",  label:"100/100 Mbit/s",  price:599, tags:"bredband fiber 100 100/100" },
-    { id:"bb300",  label:"300/300 Mbit/s",  price:389, tags:"bredband fiber 300 300/300" },
-    { id:"bb1000", label:"1000/1000 Mbit/s",price:599, tags:"bredband fiber 1000 1000/1000 gigabit" }
-  ]},
-  { cat: "TV grundpaket", plans: [
-    { id:"mini",   label:"TV Mini",   price:149, tags:"tv mini tv4 play plus 19 kanaler" },
-    { id:"mellan", label:"TV Mellan", price:249, tags:"tv mellan britbox tv4 play 36 kanaler" },
-    { id:"mycket", label:"TV Mycket", price:499, tags:"tv mycket viaplay hbo 48 kanaler" }
-  ]},
-  { cat: "Premium TV / Streaming", plans: [
-    { id:"mer",   label:"Streaming Mer",   price:199, tags:"netflix hbo disney mer" },
-    { id:"maxad", label:"Streaming Maxad", price:299, tags:"netflix hbo disney prime maxad" },
-    { id:"mest",  label:"Streaming Mest",  price:499, tags:"netflix hbo disney prime tv4 viaplay mest" }
-  ]}
+/* ======= Data ======= */
+const DENOMS = [299,339,389,439,489,499,599,689,699,749];
+
+const STREAMING = [
+  { id:'netflix', name:'Netflix Standard', price:149 },
+  { id:'disney',  name:'Disney+ Standard', price:99 },
+  { id:'max',     name:'Max (HBO/Discovery) Basic', price:89 },
+  { id:'tv4',     name:'TV4 Play Plus utan reklam', price:169 },
+  { id:'prime',   name:'Amazon Prime (med reklam)', price:59 },
+  { id:'viaplay', name:'Viaplay Film & Serier', price:169 },
 ];
 
-/* ======================= STATE / STORAGE ======================= */
-const SKEY = "btv_compass_v34";
+const GROUPS = [
+  { cat:"Bredband", plans:[
+    { id:"bb100",  label:"100/100 Mbit/s" },
+    { id:"bb300",  label:"300/300 Mbit/s" },
+    { id:"bb1000", label:"1000/1000 Mbit/s" },
+  ]},
+  { cat:"TV grundpaket", plans:[
+    { id:"mini",   label:"TV Mini" },
+    { id:"mellan", label:"TV Mellan" },
+    { id:"mycket", label:"TV Mycket" },
+  ]},
+  { cat:"Premium TV / Streaming", plans:[
+    { id:"mer",   label:"Streaming Mer" },
+    { id:"maxad", label:"Streaming Maxad" },
+    { id:"mest",  label:"Streaming Mest" },
+  ]},
+];
+
+/* ======= State ======= */
+const SKEY = "btv_compass_v35";
 let state = {
-  // selections: { "Bredband": planId, ... }
-  selections: {},
-  // custom prices: { planId: {m6a:number, m6b:number} }
-  custom: {}
+  selections: {},          // { "Bredband": "bb100", ... }
+  custom: {},              // { planId: { m6a, m6b } }
+  streaming: {},           // { id: true/false }
+  includeStreaming: false, // bool
+  lastInputId: null        // track senaste aktiva input
 };
+const fmt = v => `${(v||0).toFixed(0)} SEK`;
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+
+/* ======= Storage ======= */
 function loadState(){
-  try{
-    const raw = localStorage.getItem(SKEY);
-    if(raw){ state = JSON.parse(raw); }
-  }catch(e){}
+  try{ const raw = localStorage.getItem(SKEY); if(raw){ state = JSON.parse(raw); } }catch(e){}
 }
 function saveState(){
-  try{
-    localStorage.setItem(SKEY, JSON.stringify(state));
-  }catch(e){}
+  try{ localStorage.setItem(SKEY, JSON.stringify(state)); }catch(e){}
 }
 
-/* ======================= HELPERS ======================= */
-const fmt = v => `${(v||0).toFixed(0)} SEK`;
-const $ = (sel, root=document)=>root.querySelector(sel);
-const $$= (sel, root=document)=>[...root.querySelectorAll(sel)];
-
-/* Tiny animation helper */
-function bump(el){
-  if(!el) return;
-  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
-}
-function flash(el){
-  if(!el) return;
-  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+/* ======= UI Builders ======= */
+function buildDenoms(){
+  const box = $('#denoms'); box.innerHTML='';
+  DENOMS.forEach(n=>{
+    const b = document.createElement('button');
+    b.className='dbtn'; b.textContent = n.toString();
+    b.title = 'Klicka för att fylla i aktivt fält';
+    b.addEventListener('click',()=>pushDenom(n));
+    box.appendChild(b);
+  });
 }
 
-/* ======================= RENDER ======================= */
+function buildStreaming(){
+  const list = $('#streamList'); list.innerHTML='';
+  STREAMING.forEach(s=>{
+    const row = document.createElement('div');
+    row.className='stream-row';
+    row.innerHTML = `
+      <label>
+        <input type="checkbox" ${state.streaming[s.id]?'checked':''}>
+        ${s.name}
+      </label>
+      <div><strong>${fmt(s.price)}</strong></div>
+    `;
+    const chk = $('input', row);
+    chk.addEventListener('change', ()=>{
+      state.streaming[s.id] = chk.checked;
+      saveState(); updateStreamingSum(); updateTotals(true);
+    });
+    list.appendChild(row);
+  });
+
+  const inc = $('#includeStreaming');
+  inc.checked = !!state.includeStreaming;
+  inc.addEventListener('change', ()=>{
+    state.includeStreaming = inc.checked;
+    saveState(); updateTotals(true);
+  });
+  updateStreamingSum();
+}
+
 function planRowHTML(cat, plan){
   const cid = `${cat}__${plan.id}`.replace(/\s+/g,'_');
-  const stored = state.custom[plan.id] || {};
-  const m6a = Number.isFinite(stored.m6a) ? stored.m6a : plan.price;
-  const m6b = Number.isFinite(stored.m6b) ? stored.m6b : plan.price;
+
+  const m6a = state.custom[plan.id]?.m6a ?? '';
+  const m6b = state.custom[plan.id]?.m6b ?? '';
 
   return `
-    <div class="plan" data-plan="${plan.id}" data-cat="${cat}" data-price="${plan.price}">
-      <label title="${plan.tags || ''}">
+    <div class="plan" data-plan="${plan.id}" data-cat="${cat}">
+      <label>
         <input type="radio" name="${cat}" id="${cid}" value="${plan.id}" ${state.selections[cat]===plan.id?'checked':''}>
         ${plan.label}
       </label>
-      <div class="price-ord">${fmt(plan.price)}</div>
-
       <div class="input-wrap">
         <input type="number" class="m6a" value="${m6a}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
         <small>6 mån (1)</small>
       </div>
-
       <div class="input-wrap">
         <input type="number" class="m6b" value="${m6b}" min="0" step="1" inputmode="numeric" pattern="[0-9]*">
         <small>6 mån (2)</small>
       </div>
-
-      <div class="disc">0 SEK</div>
-    </div>`;
+    </div>
+  `;
 }
 
-function render(){
-  const wrap = $('#services'); wrap.innerHTML = '';
-  DATA.forEach(group=>{
+function buildGroups(){
+  const wrap = $('#services'); wrap.innerHTML='';
+  GROUPS.forEach(g=>{
     const det = document.createElement('details'); det.className='widget'; det.open = true;
     det.innerHTML = `
-      <summary>
-        <span>${group.cat}</span>
-        <span style="opacity:.7;font-size:12px">Välj ett alternativ</span>
-      </summary>
-      <div class="widget-body">
-        ${group.plans.map(p=>planRowHTML(group.cat, p)).join('')}
-      </div>
+      <summary><span>${g.cat}</span><span style="opacity:.7;font-size:12px">Välj ett alternativ</span></summary>
+      <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>
     `;
     wrap.appendChild(det);
   });
 
-  // selection highlight and events
-  $$('input[type="radio"]').forEach(r=>{
-    r.addEventListener('change', (e)=>{
+  // radio
+  $$('input[type=radio]').forEach(r=>{
+    r.addEventListener('change',()=>{
       const row = r.closest('.plan');
       state.selections[row.dataset.cat] = r.value;
       saveState();
@@ -237,113 +272,128 @@ function render(){
 
   // inputs
   $$('.m6a, .m6b').forEach(inp=>{
-    inp.addEventListener('input', (e)=>{
+    inp.addEventListener('focus', ()=>{ state.lastInputId = getInputId(inp); saveState(); });
+    inp.addEventListener('click', ()=>{ state.lastInputId = getInputId(inp); saveState(); });
+    inp.addEventListener('input', ()=>{
       const row = inp.closest('.plan');
       const pid = row.dataset.plan;
-      const v = parseFloat(inp.value)||0;
-      // persist
+      const n = parseFloat(inp.value);
       state.custom[pid] = state.custom[pid] || {};
-      if(inp.classList.contains('m6a')) state.custom[pid].m6a = v;
-      else state.custom[pid].m6b = v;
-      saveState();
-
-      // UI feedback
-      inp.classList.add('active');
-      updateRowVisual(row);
-      updateTotals(true);
+      if(inp.classList.contains('m6a')) state.custom[pid].m6a = Number.isFinite(n)?n:null;
+      else state.custom[pid].m6b = Number.isFinite(n)?n:null;
+      // guldfärg vid input
+      inp.classList.toggle('active', inp.value !== '');
+      saveState(); updateRowVisual(row); updateTotals(true);
     });
+    // init gold state if has value
+    inp.classList.toggle('active', inp.value !== '');
   });
 
-  // initial visuals
+  // init visuals
   $$('.plan').forEach(updateRowVisual);
-  updateTotals(false);
 }
 
-/* ======================= VISUAL LOGIC PER ROW ======================= */
+/* ======= Helpers ======= */
+function getInputId(inp){
+  const row = inp.closest('.plan'); if(!row) return null;
+  const pid = row.dataset.plan;
+  const which = inp.classList.contains('m6a') ? 'm6a' : 'm6b';
+  return `${pid}:${which}`;
+}
+
+function focusLast(){
+  if(!state.lastInputId) return;
+  const [pid,which] = state.lastInputId.split(':');
+  const sel = `.plan[data-plan="${pid}"] .${which}`;
+  const el = $(sel); if(el){ el.focus(); el.select?.(); }
+}
+
+/* Prisvalör-klick → fyll i senaste aktiva input */
+function pushDenom(val){
+  if(!state.lastInputId){
+    // om inget fält har aktiverats ännu: välj första synliga input
+    const first = $('.m6a') || $('.m6b');
+    if(!first) return;
+    state.lastInputId = getInputId(first);
+  }
+  const [pid,which] = state.lastInputId.split(':');
+  const el = $(`.plan[data-plan="${pid}"] .${which}`);
+  if(!el) return;
+  el.value = String(val);
+  el.classList.add('active');
+  // skriv in i state
+  state.custom[pid] = state.custom[pid] || {};
+  state.custom[pid][which] = val;
+  saveState();
+  updateRowVisual(el.closest('.plan'));
+  updateTotals(true);
+}
+
+/* Row visuals (gold highlight on selection) */
 function updateRowVisual(row){
   if(!row) return;
-  const priceOrdEl = row.querySelector('.price-ord');
-  const discEl = row.querySelector('.disc');
-  const p = +row.dataset.price;
-  const m6a = +row.querySelector('.m6a').value || 0;
-  const m6b = +row.querySelector('.m6b').value || 0;
-  const avg = (m6a + m6b)/2;
-  const diff = p - avg;
-
-  // selection style
   const name = row.dataset.cat;
   const selectedId = state.selections[name];
   row.classList.toggle('selected', selectedId === row.dataset.plan);
-
-  // before/after tint
-  priceOrdEl.classList.toggle('before', diff > 0); // rödaktig om rabatt
-  const a = row.querySelector('.m6a'), b = row.querySelector('.m6b');
-  [a,b].forEach(el=>{
-    const val = +el.value || 0;
-    // mark gold if edited OR if lower than ordinarie
-    const shouldGold = el.classList.contains('active') || val < p;
-    el.classList.toggle('active', shouldGold);
-  });
-
-  // discount label (SEK only)
-  discEl.textContent = diff>0 ? `-${diff.toFixed(0)} SEK` : '0 SEK';
-  discEl.classList.toggle('gold', diff>0);
 }
 
-/* ======================= TOTALS ======================= */
+/* ======= Streaming widget logic ======= */
+function updateStreamingSum(){
+  let sum = 0;
+  STREAMING.forEach(s=>{ if(state.streaming[s.id]) sum += s.price||0; });
+  $('#streamSum').textContent = fmt(sum);
+  return sum;
+}
+
+/* ======= Totals ======= */
 function updateTotals(animate){
-  let ord=0, kund=0;
+  let monthly = 0;
+  let selectedCount = 0;
 
-  // clear previous selection highlights
-  $$('.plan').forEach(p=>p.classList.remove('__was'));
-
-  // each category: apply selected row
-  DATA.forEach(group=>{
-    const sel = state.selections[group.cat];
+  GROUPS.forEach(g=>{
+    const sel = state.selections[g.cat];
     if(!sel) return;
-    const row = $(`.plan[data-cat="${group.cat}"][data-plan="${sel}"]`);
+    const row = $(`.plan[data-cat="${g.cat}"][data-plan="${sel}"]`);
     if(!row) return;
-    const p = +row.dataset.price;
-    const m6a = +row.querySelector('.m6a').value || 0;
-    const m6b = +row.querySelector('.m6b').value || 0;
-    const avg = (m6a+m6b)/2;
-    ord += p; kund += avg;
+    const a = parseFloat($('.m6a',row).value)||0;
+    const b = parseFloat($('.m6b',row).value)||0;
+    const avg = (a + b) / 2;
+    monthly += avg;
+    selectedCount++;
   });
 
-  const rab = ord - kund;
-  const ordEl  = $('#ordTot');
+  // streaming optional
+  if(state.includeStreaming){
+    monthly += updateStreamingSum();
+  }
+
   const kundEl = $('#kundTot');
   const yearEl = $('#yearTot');
-  const rabEl  = $('#rabTot');
+  const cntEl = $('#countSel');
 
-  ordEl.textContent  = fmt(ord);
-  kundEl.textContent = fmt(kund);
-  yearEl.textContent = fmt(kund*12);
-  rabEl.textContent  = `-${fmt(rab)}`;
+  kundEl.textContent = fmt(monthly);
+  yearEl.textContent = fmt(monthly*12);
+  cntEl.textContent = selectedCount + (state.includeStreaming ? ' + streaming' : '');
 
-  if(animate){ [ordEl,kundEl,yearEl,rabEl].forEach(bump); }
+  if(animate){ [kundEl,yearEl,cntEl].forEach(el=>{ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }); }
 }
 
-/* ======================= SEARCH ======================= */
+/* ======= Search ======= */
 function attachSearch(){
-  const box = $('#search');
-  const clear = $('#clearSearch');
+  const box = $('#search'), clr = $('#clearSearch');
   box.addEventListener('input', ()=>{
     const q = box.value.trim().toLowerCase();
     $$('.plan').forEach(row=>{
       const text = (row.textContent||'').toLowerCase();
-      const tags = (row.querySelector('label')?.title||'').toLowerCase();
-      const show = !q || text.includes(q) || tags.includes(q);
+      const show = !q || text.includes(q);
       row.style.display = show ? 'grid' : 'none';
       if(show){ row.closest('details')?.setAttribute('open',''); }
     });
   });
-  clear.addEventListener('click', ()=>{
-    box.value=''; box.dispatchEvent(new Event('input'));
-  });
+  clr.addEventListener('click', ()=>{ box.value=''; box.dispatchEvent(new Event('input')); });
 }
 
-/* ======================= THEME TOGGLE ======================= */
+/* ======= Theme & Reset ======= */
 function attachTheme(){
   const btn = $('#themeBtn');
   btn.addEventListener('click', ()=>{
@@ -353,22 +403,24 @@ function attachTheme(){
     btn.textContent = dark ? 'Mörkt läge' : 'Ljust läge';
   });
 }
-
-/* ======================= RESET ======================= */
 function attachReset(){
   $('#resetBtn').addEventListener('click', ()=>{
-    state = { selections:{}, custom:{} };
+    state = { selections:{}, custom:{}, streaming:{}, includeStreaming:false, lastInputId:null };
     saveState();
-    render();
+    buildGroups(); updateTotals(true); buildStreaming(); buildDenoms();
   });
 }
 
-/* ======================= INIT ======================= */
+/* ======= Init ======= */
 loadState();
-render();
+buildDenoms();
+buildStreaming();
+buildGroups();
 attachSearch();
 attachTheme();
 attachReset();
+updateTotals(false);
+focusLast();
 </script>
 </body>
 </html>
