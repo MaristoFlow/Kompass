@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kompassen – Telia-paketkalkylator</title>
+<title>Kompassen</title>
 <style>
 :root{
   --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
@@ -31,6 +31,15 @@ h1{margin:0;font-size:18px;font-weight:800}
 
 main{max-width:1200px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+
+/* Summary & selection */
+#selectionSummary{text-align:center;padding:16px}
+#selectionSummary h2{margin:0 0 10px 0;font-size:17px}
+.selection-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.selection-list .item{
+  background:var(--match);padding:6px 10px;border-radius:8px;
+  font-weight:600;border:1px solid var(--line);min-width:120px;text-align:center;
+}
 
 /* Summary top */
 .summary-top{text-align:center;padding:18px 14px}
@@ -81,8 +90,6 @@ details.widget>summary::-webkit-details-marker{display:none}
 /* Netflix toggle */
 .nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
 .nf-toggle input{accent-color:var(--accent);transform:scale(1.1)}
-.nf-toggle span{font-size:11px;opacity:.8;display:none}
-.nf-toggle label{cursor:pointer}
 .nf-icon{
   font-size:12px;font-weight:800;color:var(--accent);
   border:1px solid var(--line);border-radius:999px;
@@ -94,7 +101,6 @@ details.widget>summary::-webkit-details-marker{display:none}
   border:1px solid var(--line);padding:2px 6px;border-radius:6px;white-space:nowrap;
   box-shadow:var(--shadow)
 }
-
 .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
 .match{background:var(--match)}
 </style>
@@ -113,6 +119,15 @@ details.widget>summary::-webkit-details-marker{display:none}
 </header>
 
 <main>
+  <!-- Dina val -->
+  <section id="selectionSummary" class="card">
+    <h2>Dina valda paket</h2>
+    <div class="selection-list" id="selectedList">
+      <div class="item muted">Inga val ännu</div>
+    </div>
+  </section>
+
+  <!-- Summering -->
   <section id="calcSummary" class="card summary-top">
     <h2>Samlad kalkyl</h2>
     <div class="summary-grid">
@@ -127,39 +142,36 @@ details.widget>summary::-webkit-details-marker{display:none}
 </main>
 
 <script>
-const GROUPS = [
-  { cat:"Bredband", plans:[
-    {id:"bb100",label:"Bredband 100/100 Mbit/s",tip:"Passar 1–2 personer, surf/HD-streaming.",tags:"bredband fiber 100"},
-    {id:"bb300",label:"Bredband 300/300 Mbit/s",tip:"För familjer med flera enheter & streaming.",tags:"bredband fiber 300 familj"},
-    {id:"bb1000",label:"Bredband 1000/1000 Mbit/s",tip:"Maxprestanda, spel & 4K/8K media.",tags:"bredband fiber gigabit spel 4k"}
+const GROUPS=[
+  {cat:"Bredband",plans:[
+    {id:"bb100",label:"Bredband 100/100 Mbit/s",tip:"Passar 1–2 personer",tags:"bredband 100"},
+    {id:"bb300",label:"Bredband 300/300 Mbit/s",tip:"För familjer med flera enheter",tags:"bredband 300 familj"},
+    {id:"bb1000",label:"Bredband 1000/1000 Mbit/s",tip:"Maxprestanda, spel & 4K/8K media",tags:"bredband 1000 spel"}
   ]},
-  { cat:"TV grundpaket", plans:[
-    {id:"tvMini",label:"TV Mini",tip:"Basutbud ~19 kanaler + TV4 Play.",tags:"tv mini tv4play bas"},
-    {id:"tvMellan",label:"TV Mellan",tip:"~36 kanaler + BritBox, familjefavoriter.",tags:"tv mellan britbox familj film serier"},
-    {id:"tvMycket",label:"TV Mycket",tip:"~48 kanaler inkl. Viaplay Medium + Max Basic.",tags:"tv mycket viaplay max film serier"}
+  {cat:"TV grundpaket",plans:[
+    {id:"tvMini",label:"TV Mini",tip:"Basutbud ~19 kanaler + TV4 Play",tags:"tv mini tv4"},
+    {id:"tvMellan",label:"TV Mellan",tip:"~36 kanaler + BritBox, familjefavoriter",tags:"tv mellan britbox"},
+    {id:"tvMycket",label:"TV Mycket",tip:"~48 kanaler inkl. Viaplay + Max Basic",tags:"tv mycket viaplay max"}
   ]},
-  { cat:"Streaming-paket", plans:[
-    {id:"streamingMer",label:"Streaming Mer",tip:"Netflix, Max Basic, Disney+ — lagom mix.",tags:"streaming mer netflix hbo max disney"},
-    {id:"streamingMaxad",label:"Streaming Maxad",tip:"Netflix + Disney+ + Prime + Max.",tags:"streaming maxad netflix prime disney hbo"},
-    {id:"streamingMest",label:"Streaming Mest",tip:"Viaplay & TV4 Play Plus inkluderas.",tags:"streaming mest viaplay tv4"}
+  {cat:"Premium",plans:[
+    {id:"mer",label:"MER",tip:"Netflix, Max Basic, Disney+",tags:"mer netflix disney",style:"text-align:center;font-weight:800"},
+    {id:"maxad",label:"MAXAD",tip:"Netflix + Disney+ + Prime + Max",tags:"maxad netflix prime",style:"text-align:center;font-weight:800"},
+    {id:"mest",label:"MEST",tip:"Störst mix inkl. Viaplay & TV4 Play",tags:"mest viaplay tv4",style:"text-align:center;font-weight:800"}
   ]},
-  { cat:"Sportpaket", plans:[
-    {id:"sportSmall",label:"Lilla Sport",tip:"Allsvenskan, La Liga, ATP m.m.",tags:"sport lilla allsvenskan laliga atp",sport:true},
-    {id:"sportLarge",label:"Stora Sport",tip:"CL, PL, F1, mer internationellt.",tags:"sport stora champions premier league f1",sport:true},
-    {id:"sportLargest",label:"Största Sport",tip:"All sport inkl. SHL, golf, F1.",tags:"sport storsta shl golf premier",sport:true}
+  {cat:"Sportpaket",plans:[
+    {id:"sportSmall",label:"Lilla Sport",tip:"Allsvenskan, LaLiga, ATP",tags:"sport lilla",sport:true},
+    {id:"sportLarge",label:"Stora Sport",tip:"Champions League, Premier League, F1",tags:"sport stora champions premier",sport:true},
+    {id:"sportLargest",label:"Största Sport",tip:"SHL, golf, F1, allt samlat",tags:"sport storsta shl golf",sport:true}
   ]}
 ];
-const NETFLIX_DELTA = 100;
+const NETFLIX_DELTA=100;
 let state={selections:{},prices:{},sportNF:{}};
 const fmt=v=>`${(v||0).toFixed(0)} SEK`;
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 
 function planRowHTML(cat,plan){
-  const pid=plan.id;
-  const m6a=state.prices[pid]?.m6a??'';
-  const m6b=state.prices[pid]?.m6b??'';
-  const m12=state.prices[pid]?.m12??'';
+  const pid=plan.id,m6a=state.prices[pid]?.m6a??'',m6b=state.prices[pid]?.m6b??'',m12=state.prices[pid]?.m12??'';
   const checked=state.selections[cat]===pid?'checked':'';
   const nf=plan.sport?`
   <label class="nf-toggle" title="Netflix +100 kr/mån">
@@ -168,8 +180,8 @@ function planRowHTML(cat,plan){
   </label>`:`<span></span>`;
   return `
   <div class="plan" data-cat="${cat}" data-id="${pid}" data-tags="${(plan.tags||'').toLowerCase()}">
-    <div class="left">
-      <label><input type="radio" name="${cat}" value="${pid}" ${checked}>${plan.label}</label>
+    <div class="left" style="${plan.style||''}">
+      <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
       <span class="info" title="${plan.tip||''}">i</span>
     </div>
     <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1)</small></div>
@@ -177,80 +189,52 @@ function planRowHTML(cat,plan){
     <div class="input-wrap"><input type="number" class="m12" value="${m12}" placeholder="0"><small>12 mån</small></div>
     ${nf}
   </div>`;}
-
+  
 function buildUI(){
   const grid=$('#widgets');grid.innerHTML='';
   GROUPS.forEach(g=>{
     const d=document.createElement('details');d.className='widget';d.open=true;
     d.innerHTML=`<summary><span>${g.cat}</span><span class="badge">Välj ett alternativ</span></summary>
-    <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>`;
+      <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>`;
     grid.appendChild(d);
   });
-  attachEvents();$$('.plan').forEach(updateRowVisual);updateTotals(false);
+  attachEvents();updateTotals(false);
 }
 
 function attachEvents(){
   $$('input[type=radio]').forEach(r=>{
-    r.addEventListener('change',()=>{const row=r.closest('.plan');const cat=row.dataset.cat;
-      state.selections[cat]=r.value;updateRowVisual(row);updateTotals(true);});
+    r.addEventListener('change',()=>{const row=r.closest('.plan');state.selections[row.dataset.cat]=r.value;updateTotals(true);});
   });
   $$('.m6a,.m6b,.m12').forEach(inp=>{
-    const act=()=>inp.classList.add('active');
-    inp.addEventListener('focus',act);inp.addEventListener('click',act);
-    inp.addEventListener('input',()=>{
-      const row=inp.closest('.plan');const pid=row.dataset.id;
-      const a=+($('.m6a',row).value)||0;const b=+($('.m6b',row).value)||0;const c=+($('.m12',row).value)||0;
-      state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null};
-      inp.classList.toggle('active',inp.value!=='');updateTotals(true);
-    });
+    inp.addEventListener('input',()=>{const row=inp.closest('.plan'),pid=row.dataset.id;
+      const a=+($('.m6a',row).value)||0,b=+($('.m6b',row).value)||0,c=+($('.m12',row).value)||0;
+      state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null};updateTotals(true);});
   });
-  $$('.nf').forEach(ch=>{
-    ch.addEventListener('change',()=>{const row=ch.closest('.plan');state.sportNF[row.dataset.id]=ch.checked;updateTotals(true);});
-  });
+  $$('.nf').forEach(ch=>{ch.addEventListener('change',()=>{state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals(true);});});
   const s=$('#search'),c=$('#clearSearch');
   s.addEventListener('input',()=>{const q=s.value.trim().toLowerCase();
-    $$('.plan').forEach(r=>{
-      r.classList.remove('match');
-      const hay=(r.textContent||'').toLowerCase()+(r.dataset.tags||'');
-      const show=!q||hay.includes(q);
-      r.style.display=show?'grid':'none';
-      if(show&&q){r.classList.add('match');r.closest('details')?.setAttribute('open','');}
-    });
-  });
+    $$('.plan').forEach(r=>{const hay=(r.textContent||'').toLowerCase()+(r.dataset.tags||'');r.style.display=!q||hay.includes(q)?'grid':'none';});});
   c.addEventListener('click',()=>{s.value='';s.dispatchEvent(new Event('input'));});
-  $('#themeBtn').addEventListener('click',()=>{
-    const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme',dark?'light':'dark');
-    $('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
-  });
   $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
-}
-
-function updateRowVisual(row){
-  const cat=row.dataset.cat;row.classList.toggle('selected',state.selections[cat]===row.dataset.id);
+  $('#themeBtn').addEventListener('click',()=>{const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';});
 }
 
 function updateTotals(anim){
-  let s6a=0,s6b=0;
+  let s6a=0,s6b=0;let selected=[];
   GROUPS.forEach(g=>{
     const pid=state.selections[g.cat];if(!pid)return;
+    const plan=g.plans.find(p=>p.id===pid);selected.push(plan.label);
     const p=state.prices[pid]||{};const a=+p.m6a||0,b=+p.m6b||0,c=+p.m12||0;
     let nf=0;if(g.cat==="Sportpaket"&&state.sportNF[pid])nf=NETFLIX_DELTA;
     if(c>0){s6a+=(c+nf)*12;}else{s6a+=(a+nf)*6;s6b+=(b+nf)*6;}
   });
   const year=s6a+s6b,avg=year/12;
-  const s1=$('#s1'),s2=$('#s2'),y=$('#year'),av=$('#avg');
-  s1.textContent=fmt(s6a);s2.textContent=fmt(s6b);y.textContent=fmt(year);av.textContent=fmt(avg);
-  if(anim)[s1,s2,y,av].forEach(el=>{el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');});
+  $('#s1').textContent=fmt(s6a);$('#s2').textContent=fmt(s6b);
+  $('#year').textContent=fmt(year);$('#avg').textContent=fmt(avg);
+  const list=$('#selectedList');list.innerHTML=selected.length?selected.map(s=>`<div class="item">${s}</div>`).join(''):'<div class="item muted">Inga val ännu</div>';
 }
 buildUI();
 </script>
-
-<footer class="card" style="text-align:center;margin:18px 16px;">
-  <p>Länkar:</p>
-  <p><a href="https://www.netflix.com" target="_blank" rel="noopener">Netflix</a> |
-     <a href="https://www.viaplay.se" target="_blank" rel="noopener">Viaplay</a> |
-     <a href="https://www.tv4play.se" target="_blank" rel="noopener">TV4 Play</a></p>
-</footer>
 </body>
 </html>
