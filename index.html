@@ -97,6 +97,8 @@ details[open] summary .icon{transform:rotate(180deg)}
 <script>
 const GROUPS=[
   {cat:"Bredband",plans:[{id:"bb1",label:"Bredband 1"},{id:"bb2",label:"Bredband 2"},{id:"bb3",label:"Bredband 3"}]},
+  {cat:"TV-paket",plans:[{id:"mini",label:"Mini"},{id:"mellan",label:"Mellan"},{id:"mycket",label:"Mycket"}]},
+  {cat:"Premiumpaket",plans:[{id:"mer",label:"Mer"},{id:"maxad",label:"Maxad"},{id:"mest",label:"Mest"}]},
   {cat:"Sportpaket",plans:[{id:"sportSmall",label:"Lilla S",sport:true},{id:"sportLarge",label:"Stora S",sport:true},{id:"sportLargest",label:"Största S",sport:true}]},
   {cat:"Mobilabonnemang",plans:[{id:"mob1",label:"Mobil 1"},{id:"mob2",label:"Mobil 2"},{id:"mob3",label:"Mobil 3"}]},
   {cat:"Övrigt",plans:[{id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},{id:"forsakring",label:"Försäkring"},{id:"egen",label:"Eget val (fyll i själv)"}]}
@@ -140,37 +142,25 @@ function buildUI(){
 }
 
 function attachEvents(){
-  // Gör radioknappar klickbara urval (toggle)
   $$('input[type=radio]').forEach(r=>{
-    r.addEventListener('click',e=>{
+    r.addEventListener('click',()=>{
       const cat=r.closest('.plan').dataset.cat;
-      if(state.selections[cat]===r.value){ // klicka ur
-        r.checked=false;
-        delete state.selections[cat];
-      }else{
-        state.selections[cat]=r.value;
-      }
+      if(state.selections[cat]===r.value){r.checked=false;delete state.selections[cat];}
+      else state.selections[cat]=r.value;
       updateTotals();
     });
   });
-
   $$('input[type=number]').forEach(inp=>inp.addEventListener('input',()=>{
     const row=inp.closest('.plan'),pid=row.dataset.id;
     const a=+($('.m6a',row)?.value)||0,b=+($('.m6b',row)?.value)||0,c=+($('.m12',row)?.value)||0,d=+($('.m24',row)?.value)||0;
-    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null,m24:d||null};
-    updateTotals();
+    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null,m24:d||null};updateTotals();
   }));
-
   $$('.nf').forEach(ch=>ch.addEventListener('change',()=>{
-    state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;
-    updateTotals();
+    state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals();
   }));
-
   $('#themeBtn').addEventListener('click',()=>{
-    const root=document.documentElement;
-    const dark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme',dark?'light':'dark');
-    $('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
+    const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
   });
   $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
 }
