@@ -3,222 +3,185 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Kompassen</title>
+<title>Kompassen – Kostnadskalkylator</title>
 <style>
 :root{
-  --bg:#f6f7fb;--card:#ffffff;--line:#e0e4ef;--text:#111318;--muted:#5f6675;--accent:#3b6aff;
-  --gold:#d8b55f;--gold-ink:#1b1400;--shadow:0 6px 24px rgba(10,20,40,.08);
-  --match:#fff6d6
+  --bg:#f3f5fa;--card:#fff;--line:#dce0ea;--text:#111;--muted:#666;
+  --accent:#4169e1;--accent-glow:#7f9cff;--gold:#dcb44e;
+  --shadow:0 5px 20px rgba(0,0,0,.08)
 }
 html[data-theme=dark]{
-  --bg:#0f1115;--card:#141820;--line:#242b3a;--text:#e9edf5;--muted:#9aa3b2;--accent:#7aa2ff;
-  --gold:#caa24e;--gold-ink:#0d0b00;--shadow:0 8px 28px rgba(0,0,0,.35);
-  --match:#2d2615
+  --bg:#0d0f13;--card:#151923;--line:#2c3342;--text:#e9ecf2;--muted:#9aa3b2;
+  --accent:#7aa2ff;--accent-glow:#b6c8ff;--gold:#cfa748;
+  --shadow:0 6px 24px rgba(0,0,0,.45)
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.05) blur(6px);
-  background:color-mix(in oklab, var(--bg) 90%, transparent);border-bottom:1px solid var(--line);
-  padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between}
-h1{margin:0;font-size:18px;font-weight:800}
-.right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:var(--card);color:inherit;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:700;box-shadow:var(--shadow)}
-.btn.ghost{background:transparent}
-.searchbar{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:var(--shadow)}
-.searchbar input{all:unset;width:260px}
-
-main{max-width:1300px;margin:18px auto;padding:0 16px;display:flex;flex-direction:column;gap:16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
-
-#selectionSummary{text-align:center;padding:16px}
-.selection-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.selection-list .item{background:var(--match);padding:6px 10px;border-radius:8px;font-weight:600;border:1px solid var(--line);min-width:150px;text-align:center}
-
-.summary-top{text-align:center;padding:18px 14px}
-.summary-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
-.summary-grid .box{min-width:180px;padding:8px 6px;line-height:1.3}
-.summary-grid .box div:first-child{font-size:13px;color:var(--muted)}
-.summary-grid .val{font-size:20px;font-weight:800;margin-top:2px}
-
-.layout{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
-details.widget{border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:all .2s ease}
-details.widget>summary{
-  list-style:none;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:800
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.6 'Inter',system-ui,Segoe UI,Roboto,sans-serif;
+  transition:background .3s,color .3s
 }
-details.widget>summary::-webkit-details-marker{display:none}
-summary .icon{transition:transform .2s ease}
-details[open] summary .icon{transform:rotate(180deg)}
-.widget-body{border-top:1px dashed var(--line);padding:8px 8px 10px}
+main{max-width:1200px;margin:40px auto;padding:0 20px;display:flex;flex-direction:column;gap:28px}
+h1{text-align:center;font-size:26px;font-weight:800;margin:0 0 10px;letter-spacing:.3px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);padding:20px;transition:background .3s,border .3s
+}
+button{border:none;background:var(--accent);color:#fff;border-radius:10px;
+  padding:9px 16px;cursor:pointer;font-weight:700;font-size:14px;
+  transition:all .25s ease;box-shadow:0 0 8px var(--accent-glow)
+}
+button:hover{background:var(--gold);color:#111;box-shadow:0 0 12px var(--gold)}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.toggle{background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:800;cursor:pointer;border-radius:8px;padding:6px 14px}
 
-.plan{display:grid;grid-template-columns:auto 70px 70px 70px auto;align-items:center;gap:8px;
-  border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;
-  transition:background .15s ease,border-color .15s ease,box-shadow .15s ease}
-.plan.mobile{grid-template-columns:auto 90px auto;}
-.plan:hover{background:color-mix(in oklab, var(--card) 80%, var(--match))}
-.plan.selected{border-color:var(--gold);box-shadow:0 0 0 2px color-mix(in oklab, var(--gold) 28%, transparent)}
-.input-wrap{display:flex;flex-direction:column;gap:2px}
-.input-wrap small{opacity:.7;font-size:10px}
-.input-wrap input[type=number]{width:100%;background:var(--card);border:1px solid var(--line);
-  color:var(--text);border-radius:8px;padding:6px;text-align:right;font-weight:600}
+.summary{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;text-align:center}
+.summary .box{min-width:180px}
+.summary .box div:first-child{font-size:13px;color:var(--muted)}
+.summary .val{font-size:20px;font-weight:800;margin-top:3px}
 
-.nf-toggle{display:flex;align-items:center;gap:6px;justify-self:end}
-.nf-icon{font-size:12px;font-weight:800;color:var(--accent);border:1px solid var(--line);border-radius:999px;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
-.nf-icon:hover::after{content:"Netflix +100 kr/mån";position:absolute;transform:translateY(24px);
-background:var(--card);color:var(--text);font-size:11px;border:1px solid var(--line);
-padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:var(--shadow)}
-.hidden{display:none!important}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(520px,1fr))}
+.category{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card);transition:background .3s,border .3s}
+.category h2{margin:0 0 12px;font-size:17px;border-bottom:1px dashed var(--line);padding-bottom:6px;text-align:center;font-weight:700;letter-spacing:.2px}
+.option{display:flex;align-items:center;justify-content:space-between;
+  border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin-bottom:8px;
+  background:var(--card);transition:all .2s}
+.option:hover{background:rgba(64,105,225,.05)}
+.option.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+.option-label{flex:1;font-weight:600}
+.controls{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.controls input{width:60px;padding:5px;border:1px solid var(--line);border-radius:8px;text-align:right;font-weight:600;background:var(--card);color:var(--text)}
+.controls small{font-size:10px;color:var(--muted);display:block;text-align:center}
+.controls .col{display:flex;flex-direction:column;align-items:center}
+
+.results-card{display:flex;flex-direction:column;gap:10px}
+.result-item{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-weight:600}
+.result-item span:last-child{font-weight:800}
+.cat-avg{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;text-align:center;margin-top:10px}
+.cat-avg .cbox{min-width:150px;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
+.cat-avg .cbox div:first-child{font-size:13px;color:var(--muted)}
+.cat-avg .val{font-weight:700;margin-top:3px}
 </style>
 </head>
 <body>
-<header>
-  <h1>Kompassen</h1>
-  <div class="right">
-    <div class="searchbar" title="Sök t.ex. Netflix, Premier League, SHL, Viaplay …">
-      🔎 <input id="search" placeholder="Sök paket, kanal eller sport …">
-      <button id="clearSearch" class="btn ghost">Rensa</button>
-    </div>
-    <button id="themeBtn" class="btn">Mörkt läge</button>
-    <button id="resetBtn" class="btn ghost">Återställ</button>
-  </div>
-</header>
-
 <main>
-  <section id="selectionSummary" class="card">
-    <h2>Dina valda paket</h2>
-    <div class="selection-list" id="selectedList"><div class="item muted">Inga val ännu</div></div>
-  </section>
+  <div class="topbar">
+    <h1>Kompassen – Kostnadskalkylator</h1>
+    <button id="themeToggle" class="toggle">DARK</button>
+  </div>
 
-  <section id="calcSummary" class="card summary-top">
-    <h2>Samlad kalkyl</h2>
-    <div class="summary-grid">
-      <div class="box"><div>Första 6 mån (pris/mån)</div><div id="s1" class="val">0 SEK</div></div>
-      <div class="box"><div>Andra 6 mån (pris/mån)</div><div id="s2" class="val">0 SEK</div></div>
+  <section id="calcSummary" class="card">
+    <div class="summary">
       <div class="box"><div>Helår totalt</div><div id="year" class="val">0 SEK</div></div>
-      <div class="box"><div>Snitt / mån</div><div id="avg" class="val">0 SEK</div></div>
+      <div class="box"><div>Snitt / månad</div><div id="avg" class="val">0 SEK</div></div>
+      <div class="box"><div>Antal val</div><div id="count" class="val">0</div></div>
     </div>
+    <div id="categoryAverages" class="cat-avg"></div>
   </section>
 
-  <section class="layout" id="widgets"></section>
+  <section class="grid" id="grid"></section>
+
+  <section id="results" class="card results-card">
+    <h2>Valda val</h2>
+    <div id="resultList"><div class="result-item"><span>Inga val ännu</span></div></div>
+  </section>
 </main>
 
 <script>
-const GROUPS=[
-  {cat:"Bredband",plans:[
-    {id:"bb1",label:"Bredband 1"},
-    {id:"bb2",label:"Bredband 2"},
-    {id:"bb3",label:"Bredband 3"}]},
-  {cat:"TV-paket",plans:[
-    {id:"tvMini",label:"Mini"},
-    {id:"tvMellan",label:"Mellan"},
-    {id:"tvMycket",label:"Mycket"}]},
-  {cat:"Premiumpaket",plans:[
-    {id:"film1",label:"All Film & Serier: Netflix + Viaplay + Max + TV4"},
-    {id:"film2",label:"All Film & Serier: Netflix + Prime + Max + TV4"},
-    {id:"film3",label:"All Film & Serier: Viaplay + Max + TV4"}]},
-  {cat:"Sportpaket",plans:[
-    {id:"sportSmall",label:"Lilla S",sport:true,tags:["shl","allsvenskan"]},
-    {id:"sportLarge",label:"Stora S",sport:true,tags:["premier league","champions league","formula 1","f1"]},
-    {id:"sportLargest",label:"Största S",sport:true,tags:["premier league","champions league","shl","f1","la liga","serie a"]}]},
-  {cat:"Mobilabonnemang",plans:[
-    {id:"mob1",label:"Mobil 1"},
-    {id:"mob2",label:"Mobil 2"},
-    {id:"mob3",label:"Mobil 3"}]},
-  {cat:"Övrigt",plans:[
-    {id:"mobil24",label:"Mobil Telefon (24 mån)",type:"mobile"},
-    {id:"forsakring",label:"Försäkring"},
-    {id:"egen",label:"Eget val (fyll i själv)"}]}
-];
-
-const NETFLIX_DELTA=100;
-let state={selections:{},prices:{},sportNF:{}};
-const fmt=v=>`${(v||0).toFixed(0)} SEK`;
+const CATEGORIES = {
+  "Bredband": ["Bredband 1", "Bredband 2"],
+  "TV": ["Film 1", "Film 2"],
+  "Sport": ["Sport 1", "Sport 2"],
+  "Mobil": ["Abonnemang 1", "Abonnemang 2"],
+  "Övrigt": ["Mobiltelefon", "Försäkring"]
+};
+const PERIODS = ["6m A","6m B","18m","24m"];
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const fmt=v=>`${v.toFixed(0)} SEK`;
 
-function planRowHTML(cat,plan){
-  const pid=plan.id;
-  const checked=state.selections[cat]===pid?'checked':'';
-  const nf=plan.sport?`<label class="nf-toggle"><input type="checkbox" class="nf" ${state.sportNF[pid]?'checked':''}><div class="nf-icon">N</div></label>`:`<span></span>`;
-  if(plan.type==="mobile"){
-    return `<div class="plan mobile" data-cat="${cat}" data-id="${pid}">
-      <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
-      <div class="input-wrap"><input type="number" class="m24" value="${state.prices[pid]?.m24||''}" placeholder="0"><small>24 mån</small></div>
-    </div>`;
-  }
-  const m6a=state.prices[pid]?.m6a??'',m6b=state.prices[pid]?.m6b??'',m12=state.prices[pid]?.m12??'';
-  return `<div class="plan" data-cat="${cat}" data-id="${pid}" data-tags="${(plan.tags||[]).join(',')}">
-    <label><input type="radio" name="${cat}" value="${pid}" ${checked}> ${plan.label}</label>
-    <div class="input-wrap"><input type="number" class="m6a" value="${m6a}" placeholder="0"><small>6 mån (1) / mån</small></div>
-    <div class="input-wrap"><input type="number" class="m6b" value="${m6b}" placeholder="0"><small>6 mån (2) / mån</small></div>
-    <div class="input-wrap"><input type="number" class="m12" value="${m12}" placeholder="0"><small>12 mån / mån</small></div>
-    ${nf}
+function createCategory(name,options){
+  return `<div class="category" data-cat="${name}">
+    <h2>${name}</h2>
+    ${options.map(o=>`
+      <div class="option" data-option="${o}">
+        <div class="option-label">${o}</div>
+        <div class="controls">
+          ${PERIODS.map(p=>`
+            <div class="col">
+              <input type="number" placeholder="0" data-period="${p}">
+              <small>${p}</small>
+            </div>`).join('')}
+        </div>
+      </div>`).join('')}
   </div>`;
 }
 
 function buildUI(){
-  const grid=$('#widgets');grid.innerHTML='';
-  GROUPS.forEach(g=>{
-    const d=document.createElement('details');d.className='widget';d.open=true;
-    d.innerHTML=`<summary><span>${g.cat}</span><span class="icon">▼</span></summary>
-      <div class="widget-body">${g.plans.map(p=>planRowHTML(g.cat,p)).join('')}</div>`;
-    grid.appendChild(d);
-  });
-  attachEvents();updateTotals();
-}
-
-function attachEvents(){
-  $$('input[type=radio]').forEach(r=>{
-    r.addEventListener('click',()=>{
-      const cat=r.closest('.plan').dataset.cat;
-      if(state.selections[cat]===r.value){r.checked=false;delete state.selections[cat];}
-      else state.selections[cat]=r.value;
-      updateTotals();
+  $('#grid').innerHTML=Object.entries(CATEGORIES)
+    .map(([cat,opts])=>createCategory(cat,opts)).join('');
+  $$('.option').forEach(opt=>{
+    opt.addEventListener('click',e=>{
+      if(e.target.tagName!=='INPUT'){
+        opt.classList.toggle('active');
+        updateResults();
+      }
     });
+    $$('input',opt).forEach(inp=>inp.addEventListener('input',updateResults));
   });
-  $$('input[type=number]').forEach(inp=>inp.addEventListener('input',()=>{
-    const row=inp.closest('.plan'),pid=row.dataset.id;
-    const a=+($('.m6a',row)?.value)||0,b=+($('.m6b',row)?.value)||0,c=+($('.m12',row)?.value)||0,d=+($('.m24',row)?.value)||0;
-    state.prices[pid]={m6a:a||null,m6b:b||null,m12:c||null,m24:d||null};updateTotals();
-  }));
-  $$('.nf').forEach(ch=>ch.addEventListener('change',()=>{
-    state.sportNF[ch.closest('.plan').dataset.id]=ch.checked;updateTotals();
-  }));
-  $('#themeBtn').addEventListener('click',()=>{
-    const root=document.documentElement;const dark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme',dark?'light':'dark');$('#themeBtn').textContent=dark?'Mörkt läge':'Ljust läge';
-  });
-  $('#resetBtn').addEventListener('click',()=>{state={selections:{},prices:{},sportNF:{}};buildUI();});
-
-  // sökning
-  $('#search').addEventListener('input',filterPlans);
-  $('#clearSearch').addEventListener('click',()=>{$('#search').value='';filterPlans();});
+  $('#themeToggle').addEventListener('click',toggleTheme);
 }
 
-function filterPlans(){
-  const q=$('#search').value.trim().toLowerCase();
-  $$('.plan').forEach(p=>{
-    const tags=(p.dataset.tags||'')+' '+p.textContent.toLowerCase();
-    p.classList.toggle('hidden',q && !tags.includes(q));
+function updateResults(){
+  const active=$$('.option.active');
+  const list=$('#resultList');
+  const catAvgBox=$('#categoryAverages');
+  if(!active.length){
+    list.innerHTML='<div class="result-item"><span>Inga val ännu</span></div>';
+    catAvgBox.innerHTML='';
+    $('#year').textContent='0 SEK';$('#avg').textContent='0 SEK';$('#count').textContent='0';
+    return;
+  }
+
+  const grouped={}; let totalMonth=0,count=0;
+  active.forEach(el=>{
+    const cat=el.closest('.category').dataset.cat;
+    const label=el.dataset.option;
+    const inputs=$$('input',el);
+    const vals=inputs.map(i=>+i.value||0);
+    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+    if(!grouped[cat]) grouped[cat]=[];
+    grouped[cat].push({label,avg});
+    totalMonth+=avg; count++;
+  });
+
+  // --- Resultlista ---
+  list.innerHTML='';
+  Object.entries(grouped).forEach(([cat,opts])=>{
+    const text=opts.map(o=>`${o.label} (${fmt(o.avg)})`).join(', ');
+    list.innerHTML+=`<div class="result-item"><span>${cat}</span><span>${text}</span></div>`;
+  });
+
+  // --- Totals ---
+  $('#avg').textContent=fmt(totalMonth);
+  $('#year').textContent=fmt(totalMonth*12);
+  $('#count').textContent=count;
+
+  // --- Snitt per kategori ---
+  catAvgBox.innerHTML='';
+  Object.entries(grouped).forEach(([cat,opts])=>{
+    const catAvg=opts.reduce((a,b)=>a+b.avg,0)/opts.length;
+    catAvgBox.innerHTML+=`<div class="cbox"><div>${cat}</div><div class="val">${fmt(catAvg)}</div></div>`;
   });
 }
 
-function updateTotals(){
-  let total6a=0,total6b=0;const selected=[];
-  GROUPS.forEach(g=>{
-    const pid=state.selections[g.cat];if(!pid)return;
-    const p=state.prices[pid]||{};const a=+p.m6a||0,b=+p.m6b||0,c=+p.m12||0,d=+p.m24||0;
-    let nf=0;if(g.cat==="Sportpaket"&&state.sportNF[pid])nf=NETFLIX_DELTA;
-    const month=(a||b||c||d)+nf;
-    selected.push(`${g.cat}: ${g.plans.find(x=>x.id===pid).label} – ${fmt(month)}`);
-    total6a+=a+nf; total6b+=b+nf;
-  });
-  const year=(total6a+total6b)*6,avg=(total6a+total6b)/2;
-  $('#s1').textContent=fmt(total6a);
-  $('#s2').textContent=fmt(total6b);
-  $('#year').textContent=fmt(year);
-  $('#avg').textContent=fmt(avg);
-  $('#selectedList').innerHTML=selected.length?selected.map(s=>`<div class="item">${s}</div>`).join(''):'<div class="item muted">Inga val ännu</div>';
+function toggleTheme(){
+  const root=document.documentElement;
+  const dark=root.getAttribute('data-theme')==='dark';
+  root.setAttribute('data-theme',dark?'light':'dark');
+  $('#themeToggle').textContent=dark?'DARK':'LIGHT';
 }
+
 buildUI();
 </script>
 </body>
