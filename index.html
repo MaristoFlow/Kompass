@@ -8,11 +8,13 @@
 :root{
   --bg:#f3f5fa;--card:#fff;--line:#dce0ea;--text:#111;--muted:#666;
   --accent:#4169e1;--accent-glow:#7f9cff;--gold:#dcb44e;
-  --shadow:0 5px 20px rgba(0,0,0,.08)
+  --shadow:0 5px 20px rgba(0,0,0,.08);
+  --cheap:#54c27a;--mid:#3b6aff;--exp:#dcb44e;
 }
 html[data-theme=dark]{
   --bg:#0d0f13;--card:#151923;--line:#2c3342;--text:#e9ecf2;--muted:#9aa3b2;
   --accent:#7aa2ff;--accent-glow:#b6c8ff;--gold:#cfa748;
+  --cheap:#2eb872;--mid:#6d8fff;--exp:#cfa748;
   --shadow:0 6px 24px rgba(0,0,0,.45)
 }
 body{
@@ -57,9 +59,11 @@ button:hover{background:var(--gold);color:#111;box-shadow:0 0 12px var(--gold)}
 .result-item{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;font-weight:600}
 .result-item span:last-child{font-weight:800}
 .cat-avg{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;text-align:center;margin-top:10px}
-.cat-avg .cbox{min-width:150px;background:var(--card);border:1px solid var(--line);
-  border-radius:10px;padding:10px 12px;box-shadow:var(--shadow)}
-.cat-avg .cbox div:first-child{font-size:13px;color:var(--muted)}
+.cat-avg .cbox{min-width:150px;border-radius:10px;padding:10px 12px;box-shadow:var(--shadow);color:#fff;font-weight:600}
+.cat-avg .cheap{background:var(--cheap)}
+.cat-avg .mid{background:var(--mid)}
+.cat-avg .exp{background:var(--exp);color:#111}
+.cat-avg .cbox div:first-child{font-size:13px;opacity:.9}
 .cat-avg .val{font-weight:700;margin-top:3px}
 </style>
 </head>
@@ -167,11 +171,25 @@ function updateResults(){
   $('#year').textContent=fmt(totalMonth*12);
   $('#count').textContent=count;
 
-  // --- Snitt per kategori ---
+  // --- Snitt per kategori med färgkod ---
   catAvgBox.innerHTML='';
+  const allAvgs=[];
   Object.entries(grouped).forEach(([cat,opts])=>{
     const catAvg=opts.reduce((a,b)=>a+b.avg,0)/opts.length;
-    catAvgBox.innerHTML+=`<div class="cbox"><div>${cat}</div><div class="val">${fmt(catAvg)}</div></div>`;
+    allAvgs.push(catAvg);
+  });
+
+  const min=Math.min(...allAvgs);
+  const max=Math.max(...allAvgs);
+  const range=max-min||1;
+
+  Object.entries(grouped).forEach(([cat,opts])=>{
+    const catAvg=opts.reduce((a,b)=>a+b.avg,0)/opts.length;
+    let cls="mid";
+    const norm=(catAvg-min)/range;
+    if(norm<0.33) cls="cheap";
+    else if(norm>0.66) cls="exp";
+    catAvgBox.innerHTML+=`<div class="cbox ${cls}"><div>${cat}</div><div class="val">${fmt(catAvg)}</div></div>`;
   });
 }
 
